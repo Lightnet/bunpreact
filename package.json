@@ -1,0 +1,24 @@
+{
+  "name": "bunpreact",
+  "version": "1.0.0",
+  "description": "",
+  "main": "http.js",
+  "scripts": {
+    "dev": "bun run dev.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies":{
+    "cookie":"^0.5.0",
+    "preact":"^10.10.0",
+    "preact-compat":"^3.19.0",
+    "react":"npm:@preact/compat",
+    "react-dom":"npm:@preact/compat"
+  },
+  "alias":{
+    "react":"preact/compat",
+    "react-dom/test-utils":"preact/test-utils",
+    "react-dom":"preact/compat",
+    "react/jsx-dev-runtime":"preact/jsx-dev-runtime"
+  }
+}
