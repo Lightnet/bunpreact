@@ -2,7 +2,7 @@
   "name": "bunpreact",
   "version": "1.0.0",
   "description": "",
-  "main": "http.js",
+  "main": "dev.js",
   "scripts": {
     "dev": "bun run dev.js"
   },
@@ -15,10 +15,15 @@
     "react":"npm:@preact/compat",
     "react-dom":"npm:@preact/compat"
   },
+  "eslintConfig": {},
+  "devDependencies":{
+    "typescript": "latest"
+  },
   "alias":{
     "react":"preact/compat",
     "react-dom/test-utils":"preact/test-utils",
     "react-dom":"preact/compat",
     "react/jsx-dev-runtime":"preact/jsx-dev-runtime"
-  }
+  },
+  "bun-create":{}
 }

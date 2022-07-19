@@ -1,7 +1,7 @@
 
 import cookie from "cookie";
 import { render } from "preact-render-to-string"
-import App from "./routes/index.jsx"
+import App from "./src/index.jsx"
 const html = render(App(),{},{pretty:true})
 
 Bun.serve({
@@ -10,10 +10,19 @@ Bun.serve({
   // http handler request
   fetch(req) {
     console.log("URL",req.url)
+    const {pathname} = new URL(req.url)// url 'http:localhost:3000/' > '/'
 
-    const headers = new Headers();
-    headers.set('Content-Type','text/html charset=UTF-8');
-    return new response(html,{headers})
+    if(pathname == '/'){ //index or home page default
+      const headers = new Headers();
+      headers.set('Content-Type','text/html charset=UTF-8');
+      return new response(html,{headers})
+    }
+
+    if(pathname == '/echo'){
+      const headers = new Headers();
+      headers.set('Content-Type','text/html charset=UTF-8');
+      return new response('hello',{headers})
+    }
 
     /*
     //get browser client
