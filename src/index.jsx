@@ -1,3 +1,6 @@
+
+
+
 /** @jsx h */
 import { h, Fragment } from "preact/compat"
 //import { h, Fragment } from "react"
@@ -9,7 +12,7 @@ export default function(){
 		<head>
 			<meta charset="utf-8" />
 			<script type="module" name="preact" src="https://cdn.jsdelivr.net/npm/preact/dist/preact.mjs"></script>
-			<script type="module" src="app.jsx"></script>
+			<script type="module" src="app.js"></script>
 		</head>
 		<body>
 

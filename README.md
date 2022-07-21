@@ -1,5 +1,14 @@
 # bunpreact
 
+# Program:
+ - Bun (https://bun.sh)
+
+# Languages:
+ - Javascript ( main )
+ - Typecript
+
+# Created By: Lightnet
+
 # Information:
   Prototype build. For preact but note there some react convert and alias since bun built react js.
 
