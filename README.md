@@ -12,7 +12,7 @@
 # Information:
   Prototype build. For preact but note there some react convert and alias since bun built react js.
 
-  Using the preact component class since browser only support js module and not jsx as it need to transpiler for to load and read for browser javascript to understand to render the html elements.
+  Using the preact component class since browser only support js module as it need to transpiler for to load and read for browser javascript to understand to render the html elements.
 
   Note this is test build.
 
