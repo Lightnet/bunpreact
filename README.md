@@ -16,16 +16,24 @@
 
   Note this is test build.
 
+## Features:
+- Bun serve
+- jsx transpiler to js for fetch request handler
+- cookie testing
+- headers testing
+- preact handler transpiler jsx to js for browser developement build 
+- cors simple ( deal with url script packages)
+
 ## Notes: 
  - There couple way to build preact serve http. 
   - SSR packages
   - built from scrap
   - bun auto compiler, transpiler, package manager
  - There is server side render. (too advance coding)
-  - there is bun predefined config .env
+  - there is bun predefined config .env loading
   - required socket to reload or rebuild preact components and variablies
-  - pacakge loading and compiler
-  - watch files changes
+  - package loading and compiler
+  - watch files changes (bun not build)
   - pre generate files for layer order query like middleware
  - preact two or three type of using by component class or jsx file.
 
