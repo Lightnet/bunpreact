@@ -14,7 +14,7 @@
 
   Using the preact component class since browser only support js module as it need to transpiler for to load and read for browser javascript to understand to render the html elements.
 
-  Note this is test build.
+  Note this is test build. Still leanring.
 
 ## Features:
 - Bun serve
@@ -26,8 +26,95 @@
 - web IDE ( importmap )
   - https://www.npmjs.com/package/es-module-shims
 
+## Design:
+
+### package.json:
+ It handle some config for bun runtime config.
+
+### dev.js:
+ It handle the set up for bun.serve for http.
+
+```js
+async function fetch(req){// from browser client input
+  const {pathname} = new URL(req.url)
+  console.log(pathname);// default to "/" and get "/favico.ico" as well.
+  if(pathname==="/"){
+    return new Response('Index, Hello World!',{});
+  }
+  return new Response('Hello World!',{});//return browser client output
+}
+
+const server = Bun.serve({
+  port: 3000,
+  fetch:fetch,
+  error(error) {//error: Error
+    return new Response("Uh oh!!\n" + error.toString(), { status: 500 });
+  },
+});
+
+//server.stop();
+```
+
+### Headers:
+ The follow the basic of the header format web api.
+
+```js
+const headers = new Headers();
+headers.append('Access-Control-Allow-Origin','*')
+headers.set('Content-Type','text/html; charset=UTF-8')
+headers.set('Access-Control-Allow-Methods','GET, PUT, POST, DELETE')
+headers.set('Access-Control-Allow-Headers',"Origin, Depth, User-Agent, X-file-Size, X-Request-With, Content-Type, Accept")
+
+return new Response("<div>Hello World!</div>",{headers});
+```
+
+
+### JSX to JS:
+  File convert to JSX to JS for browser to read and render html preact components.
+```js
+import {file, serve} from "bun";
+import { join } from "node:path";
+// JSX to JS
+const transpiler = new Bun.Transpiler({ loader: "jsx", platform:"browser" });
+const filepath = new URL( req.url).pathname;// ex. "/app.jsx"
+const blob = file(join(import.meta.dir+"/", filepath))
+let text = await new Response(blob).text();
+let JSXToJs = transpiler.transformSync(text)
+JSXToJs = JSXToJs.replace('"preact"', `"preact"; import { jsx } from "preact/jsx-runtime"; `)
+return new Response(JSXToJs,{
+  headers:{'Content-Type':'text/javascript'}
+})
+```
+
+```js
+// Bun built in variablies
+const transpiler = new Bun.Transpiler({ loader: "jsx", platform:"browser" });
+let text = `<div>Hello World</div>`; // does not work but return  ";"
+text = `function Page(){return (<div>Hello World</div>)}`;//this works since warp around function
+let JSXToJs = transpiler.transformSync(text);
+```
+JSX
+```jsx
+<div>Hello World</div>
+```
+
+```js
+import { jsx } from "preact/jsx-runtime"; // note since use of bun.Transpiler does not add import. Must be config.
+
+export default jsx(
+  "div",
+  {
+    children: "hi!",
+  },
+  undefined,
+  false,
+  undefined,
+  this
+);
+```
+
 ## Notes: 
- - There couple way to build preact serve http. 
+ - There are couples way to build preact serve http. 
   - SSR packages
   - built from scrap
   - bun auto compiler, transpiler, package manager
