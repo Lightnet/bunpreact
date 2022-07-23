@@ -23,6 +23,8 @@
 - headers testing
 - preact handler transpiler jsx to js for browser developement build 
 - cors simple ( deal with url script packages)
+- web IDE ( importmap )
+  - https://www.npmjs.com/package/es-module-shims
 
 ## Notes: 
  - There couple way to build preact serve http. 
@@ -54,9 +56,12 @@ https://preactjs.com/guide/v10/getting-started
 </script>
 ```
 
+## Web sandbox test:
+- https://codedamn.com/playground/4tiQmWVHa6BkHvFwDp-T9
+
 # References:
  - https://github.com/oven-sh/bun/tree/main/examples
  - https://developer.mozilla.org/en-US/docs/Web/API/Headers
  - https://github.com/oven-sh/bun#Reference
  - https://preactjs.com/
- - 
+ - https://www.npmjs.com/package/es-module-shims
