@@ -24,8 +24,7 @@ async function fetch(req){
 	headers.set('Content-Type','text/html; charset=UTF-8')
 	console.log("url page:",req.url);
 	const {pathname} = new URL(req.url)
-	//console.log("pathname");
-	//console.log(pathname);
+	//console.log("pathname",pathname);
 
 	if(pathname === '/favicon.ico'){
 		//heads.set('Set-Cookie', cookie.serialize('test','testss'))
@@ -63,14 +62,13 @@ async function fetch(req){
 		headers.append('Access-Control-Allow-Origin','*')
 		headers.append('Access-Control-Allow-Origin','https://unpkg.com/')
 		//headers.append('Access-Control-Allow-Origin','http://localhost:3000/')
-		
 		headers.set('Access-Control-Allow-Methods','GET, PUT, POST, DELETE')
 		headers.set('Access-Control-Allow-Headers',"Origin, Depth, User-Agent, X-file-Size, X-Request-With, Content-Type, Accept")
 		
 		//console.log(headers)
 		return new Response(blob,{
-		headers
-	});
+			headers
+		});
 	}
 	if(req.url.endsWith('.js')){
 		const filepath = new URL( req.url).pathname;
@@ -99,11 +97,7 @@ async function fetch(req){
 		//console.log(JSXToJs)
 		// add jsx for render element
 		JSXToJs = JSXToJs.replace('"preact"', `"preact"; import { jsx } from "preact/jsx-runtime"; `)
-		return new Response(JSXToJs,{
-			headers:{
-			'Content-Type':'text/javascript'
-			}
-		})
+		return new Response(JSXToJs,{headers:{'Content-Type':'text/javascript'}})
 	}
 
 	return new Response(
