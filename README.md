@@ -124,7 +124,8 @@ export default jsx(
     {
       "imports":{
         "preact":"https://unpkg.com/preact?module",
-        "preact/jsx-runtime":"https://cdn.jsdelivr.net/npm/preact@10.10.0/jsx-runtime/dist/jsxRuntime.module.js"
+        "preact/hooks":"https://unpkg.com/preact@10.10.0/hooks/dist/hooks.module.js",
+        "preact/jsx-runtime":"https://unpkg.com/preact@10.10.0/jsx-runtime/dist/jsxRuntime.module.js"
       }
     }
     </script>
