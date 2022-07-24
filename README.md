@@ -68,7 +68,6 @@ headers.set('Access-Control-Allow-Headers',"Origin, Depth, User-Agent, X-file-Si
 return new Response("<div>Hello World!</div>",{headers});
 ```
 
-
 ### JSX to JS:
   File convert to JSX to JS for browser to read and render html preact components.
 ```js
@@ -97,7 +96,7 @@ JSX
 ```jsx
 <div>Hello World</div>
 ```
-
+JS
 ```js
 import { jsx } from "preact/jsx-runtime"; // note since use of bun.Transpiler does not add import. Must be config.
 
@@ -112,6 +111,37 @@ export default jsx(
   this
 );
 ```
+### Index HTML:
+ Note that jsx format might not work on html for front page render. As some browser does not work correctly.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'nonce-n0nce'" />
+  	<script async src="https://unpkg.com/es-module-shims@1.5.9/dist/es-module-shims.js" nonce="n0nce"></script>
+    <script type="importmap" nonce="n0nce">
+    {
+      "imports":{
+        "preact":"https://unpkg.com/preact?module",
+        "preact/jsx-runtime":"https://cdn.jsdelivr.net/npm/preact@10.10.0/jsx-runtime/dist/jsxRuntime.module.js"
+      }
+    }
+    </script>
+    <script type="module" defer nonce="n0nce">
+// For Testing if the code works
+  import {h} from "preact";
+  console.log(h)
+  console.log("Test Here?");
+    </script>
+  </head>
+  <body>
+    <label>Testing</label>
+	</body>
+</html> 
+```
+ Note that there are tag or attribute for easy access to importmap for development test. It handle script Content-Security-Policy config.
+
 
 ## Notes: 
  - There are couples way to build preact serve http. 

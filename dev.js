@@ -1,3 +1,10 @@
+/**
+ * 
+ * 
+ * Information:
+ * 	http web server
+ */
+
 // mozilla docs/web/api/headers
 
 import {file, serve} from "bun";
@@ -6,16 +13,19 @@ import { join } from "node:path";
 import livereload from "bun-livereload";
 import cookie from "cookie";
 
-console.log("bun serve http://localhost:3000")
+//console.log("process.env.PORT")
+//console.log(process.env.PORT)
+
+let PORT = process.env.PORT || 3000;
 
 async function fetch(req){
-	console.log("/////////////////")
+	//console.log("/////////////////")
 	const headers = new Headers();
 	headers.set('Content-Type','text/html; charset=UTF-8')
 	console.log("url page:",req.url);
 	const {pathname} = new URL(req.url)
-	console.log("pathname");
-	console.log(pathname);
+	//console.log("pathname");
+	//console.log(pathname);
 
 	if(pathname === '/favicon.ico'){
 		//heads.set('Set-Cookie', cookie.serialize('test','testss'))
@@ -76,17 +86,17 @@ async function fetch(req){
 		const transpiler = new Bun.Transpiler({ loader: "jsx", platform:"browser" });
 		//
 		const filepath = new URL( req.url).pathname;
-		console.log("JSX: ",filepath)
-		console.log(import.meta.dir)
+		//console.log("JSX: ",filepath)
+		//console.log(import.meta.dir)
 		const blob = file(join(import.meta.dir+"/", filepath))
-		console.log(blob)
+		//console.log(blob)
 		let text = await new Response(blob).text();
-		console.log("text")
+		//console.log("text")
 		//text = text.replace("preact", "https://cdn.jsdelivr.net/npm/preact/dist/preact.mjs");
-		console.log(text)
+		//console.log(text)
 		let JSXToJs = transpiler.transformSync(text)
-		console.log("JSX")
-		console.log(JSXToJs)
+		//console.log("JSX")
+		//console.log(JSXToJs)
 		// add jsx for render element
 		JSXToJs = JSXToJs.replace('"preact"', `"preact"; import { jsx } from "preact/jsx-runtime"; `)
 		return new Response(JSXToJs,{
@@ -101,9 +111,11 @@ async function fetch(req){
 	);
 }
 
-const server = Bun.serve({
+//console.log("PORT:",PORT)
+console.log(`Bun serve http://localhost:${PORT}`)
+const server = serve({
   //port: 3000,
-  port: 1337,
+  port: Number(PORT),//error on string
   fetch:livereload(fetch),
   error(error) {//error: Error
     return new Response("Uh oh!!\n" + error.toString(), { status: 500 });
