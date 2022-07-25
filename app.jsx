@@ -21,7 +21,7 @@ export default function App(){
       <ELogin path="/login" />
       <ESignUp path="/signup" />
 
-      <ELogin default />
+      <Home default />
     </Router>
     
   </div>

@@ -12,9 +12,19 @@ import {file, serve} from "bun";
 import { join } from "node:path";
 import livereload from "bun-livereload";
 import cookie from "cookie";
+import { 
+	initDB, 
+	getDB, 
+	checkUser, 
+	addUser, 
+	checkUserPassphrase 
+
+} from "./database.js";
 
 //console.log("process.env.PORT")
 //console.log(process.env.PORT)
+
+initDB();
 
 let PORT = process.env.PORT || 3000;
 
@@ -23,6 +33,7 @@ async function fetch(req){
 	const headers = new Headers();
 	headers.set('Content-Type','text/html; charset=UTF-8')
 	console.log("url page:",req.url);
+	console.log("METHOD:",req.method);
 	const {pathname} = new URL(req.url)
 	//console.log("pathname",pathname);
 
@@ -32,6 +43,35 @@ async function fetch(req){
 		//return new Response(blob,{headers:heads});
 		//return new Response('Hello Echo!',{headers:headers});
 		return new Response('',{status:404});
+	}
+
+	if(pathname === '/signin' && req.method=='POST'){
+		console.log("SIGN IN POST")
+
+		const data = await req.json();
+		console.log(data)
+		const user = checkUserPassphrase(data.alias,data.pass);
+		return new Response('',{status:200});
+	}
+
+	if(pathname === '/signup' && req.method=='POST'){
+		const data = await req.json();
+		const isUser = checkUser(data.alias);
+		if(isUser){
+			console.log("USER FOUND")
+		}else{
+			console.log("NOT USER FOUND")
+			addUser(data.alias,data.pass);
+		}
+		//addUser("test","test")
+		return new Response('',{status:200});
+	}
+
+
+  if(pathname === '/db'){
+		getDB();
+		
+		return new Response('',{status:200});
 	}
 
 	if(pathname === '/echo'){
