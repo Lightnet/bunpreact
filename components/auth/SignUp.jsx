@@ -17,11 +17,17 @@ export default function ELogin(){
 
   function inputPassphrase(event){
     //console.log(event.target.value)
-    setAlias(event.target.value)
+    setPassphrase(event.target.value)
   }
 
   function btnRegister(){
-
+    fetch('/signup',{
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:JSON.stringify({alias:alias,pass:passphrase})
+    }).then(response=>{
+      console.log(response)
+    })
   }
 
   function btnCancel(){
