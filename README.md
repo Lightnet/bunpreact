@@ -12,15 +12,16 @@
 # Information:
   Prototype build. For preact but note there some react convert and alias since bun built react js.
 
-  Using the preact component class since browser only support js module as it need to transpiler for to load and read for browser javascript to understand to render the html elements.
+  Using the preact components since browser only support js module as it need to transpiler for to load and read for browser javascript to understand to render the html elements.
 
-  Note this is test build. Still leanring.
+  Note this is test build. Still learning.
 
 ## Features:
 - Bun serve
 - jsx transpiler to js for fetch request handler
 - cookie testing
 - headers testing
+- simple Json web token > JWT
 - preact handler transpiler jsx to js for browser developement build 
 - cors simple ( deal with url script packages)
 - web IDE ( importmap )
@@ -147,7 +148,6 @@ export default jsx(
 ## Notes: 
  - There are couples way to build preact serve http. 
   - SSR packages
-  - built from scrap
   - bun auto compiler, transpiler, package manager
  - There is server side render. (too advance coding)
   - there is bun predefined config .env loading
