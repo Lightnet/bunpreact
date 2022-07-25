@@ -1,4 +1,8 @@
+
+
 import { Database } from "bun:sqlite";
+import { generateHashPassword } from "./libs/serveapi.js"
+import crypto,{ randomUUID } from 'crypto';
 
 //const db = new Database("mydb.sqlite");
 
@@ -11,6 +15,8 @@ import { Database } from "bun:sqlite";
 // Log results
 //console.log(result)
 
+//const SECRET = process.env.SECRET;
+
 let db;
 function initDB(){
   if(db){
@@ -18,9 +24,11 @@ function initDB(){
   }else{
     db = new Database("mydb.sqlite");
     console.log("DB INIT!")
+    //deleteUserTable();
     db.run(
       `CREATE TABLE IF NOT EXISTS user (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userId TEXT,
         alias TEXT,
         passphrase TEXT,
         email TEXT,
@@ -28,6 +36,10 @@ function initDB(){
         date TEXT
       )`);
   }
+}
+
+function deleteUserTable(){
+    db.run(`DROP TABLE IF EXISTS user;`);
 }
 
 function getDB(){
@@ -43,7 +55,7 @@ function checkUser(name){
   // get the query
   const stmt = db.query("SELECT * FROM user WHERE alias = ?");
   //console.log(stmt.get(name));
-  return stmt.get(name);
+  return stmt.get(name) || null;
 }
 
 function checkUserPassphrase(name,pass){
@@ -52,13 +64,22 @@ function checkUserPassphrase(name,pass){
 
 function addUser(name, pass){
   //const insert = db.prepare("INSERT INTO user (alias, passphrase) VALUES ($alias, $pass)");
-  db.run(
-    "INSERT INTO user (alias, passphrase) VALUES (?, ?)",
-    name,
-    pass
-  );
-
-  return null;
+  try {
+    
+    const SALT = crypto.randomBytes(16).toString('hex');
+    const _hash = generateHashPassword(pass,SALT);
+    db.run(
+      "INSERT INTO user (userId, alias, passphrase, salt) VALUES (?, ?, ?, ?)",
+      randomUUID(),
+      name,
+      _hash,
+      SALT
+    );
+    return true;
+  }catch(error){
+      console.log("error", error)
+    return false;
+  }
 }
 
 export {

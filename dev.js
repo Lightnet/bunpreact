@@ -20,9 +20,14 @@ import {
 	checkUserPassphrase 
 
 } from "./database.js";
+import { isEmpty } from "./libs/helper.js"
+import { verifyPassword, createJWT } from "./libs/serveapi.js"
 
 //console.log("process.env.PORT")
 //console.log(process.env.PORT)
+
+console.log(process.env.SECRET)
+const SECRET = process.env.SECRET;
 
 initDB();
 
@@ -50,27 +55,75 @@ async function fetch(req){
 
 		const data = await req.json();
 		console.log(data)
-		const user = checkUserPassphrase(data.alias,data.pass);
+        if(!isEmpty(data.alias) && !isEmpty(data.pass)){
+            console.log("NOT EMPTY")
+            let user = checkUser(data.alias);
+            console.log("USER:")
+            console.log(user)
+            //if(user.pass)
+            if(user){//check exist
+                console.log("FOUND USER")
+                //check for passphrase
+								//console.log(verifyPassword(user.passphrase,data.pass,user.salt))
+                if(verifyPassword(user.passphrase,data.pass,user.salt)==true){
+									console.log("PASS")
+									//heads.set('Set-Cookie', cookie.serialize('test','testss'))
+
+									const payload={
+										id:user.userId,
+										alias:user.alias,
+									}
+
+									const token = createJWT(payload,SECRET);
+									console.log(token)
+
+
+									return new Response(JSON.stringify({api:"PASS"}),{status:200,headers:{
+										'Set-Cookie':cookie.serialize('token',token,{
+
+										})
+									}});
+
+                }else{
+									console.log("FAIL PASSWORD")
+                  return new Response(JSON.stringify({api:"INCORRET"}),{status:200});
+                }
+            }else{
+                console.log("NOT FOUND")
+                return new Response(JSON.stringify({api:"INVALID"}),{status:200});
+            }
+            
+        }else{
+            console.log("EMPTY")
+            return new Response(JSON.stringify({api:"EMPTY"}),{status:200});
+        }
+        
 		return new Response('',{status:200});
 	}
 
 	if(pathname === '/signup' && req.method=='POST'){
 		const data = await req.json();
-		const isUser = checkUser(data.alias);
-		if(isUser){
-			console.log("USER FOUND")
-		}else{
-			console.log("NOT USER FOUND")
-			addUser(data.alias,data.pass);
+		if(!isEmpty(data.alias) && !isEmpty(data.pass)){
+			const isUser = checkUser(data.alias);
+			if(isUser){
+				console.log("USER FOUND")
+			}else{
+				console.log("NOT USER FOUND")
+				addUser(data.alias,data.pass);
+			}
 		}
 		//addUser("test","test")
 		return new Response('',{status:200});
 	}
 
+	if(pathname === '/signout' && req.method=='POST'){
+		return new Response(JSON.stringify({api:"LOGOUT"}),{status:200,headers:{
+			'Set-Cookie':cookie.serialize('token','',{})
+		}});
+	}
 
   if(pathname === '/db'){
 		getDB();
-		
 		return new Response('',{status:200});
 	}
 
