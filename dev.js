@@ -7,6 +7,7 @@
 
 // mozilla docs/web/api/headers
 
+import crypto,{ randomUUID } from 'crypto';
 import {file, serve} from "bun";
 //import fs from "node:fs"
 import { join } from "node:path";
@@ -18,7 +19,6 @@ import {
 	checkUser, 
 	addUser, 
 	checkUserPassphrase 
-
 } from "./database.js";
 import { isEmpty } from "./libs/helper.js"
 import { verifyPassword, createJWT } from "./libs/serveapi.js"
@@ -38,9 +38,20 @@ async function fetch(req){
 	const headers = new Headers();
 	headers.set('Content-Type','text/html; charset=UTF-8')
 	console.log("url page:",req.url);
-	console.log("METHOD:",req.method);
+	//console.log("METHOD:",req.method);
 	const {pathname} = new URL(req.url)
 	//console.log("pathname",pathname);
+
+	const cookies = cookie.parse(req.headers.get('cookie') || '');
+	
+	if(cookies.token){
+		//console.log("TOKEN:",cookies.token)
+		const text = cookies.token.split(".")[1]
+		//console.log(Buffer.from(text, 'base64').toString('ascii'))
+	}else{
+		console.log("TOKEN: NULL")
+	}
+
 
 	if(pathname === '/favicon.ico'){
 		//heads.set('Set-Cookie', cookie.serialize('test','testss'))
@@ -55,48 +66,51 @@ async function fetch(req){
 
 		const data = await req.json();
 		console.log(data)
-        if(!isEmpty(data.alias) && !isEmpty(data.pass)){
-            console.log("NOT EMPTY")
-            let user = checkUser(data.alias);
-            console.log("USER:")
-            console.log(user)
-            //if(user.pass)
-            if(user){//check exist
-                console.log("FOUND USER")
-                //check for passphrase
-								//console.log(verifyPassword(user.passphrase,data.pass,user.salt))
-                if(verifyPassword(user.passphrase,data.pass,user.salt)==true){
-									console.log("PASS")
-									//heads.set('Set-Cookie', cookie.serialize('test','testss'))
+		if(!isEmpty(data.alias) && !isEmpty(data.pass)){
+			console.log("NOT EMPTY")
+			let user = checkUser(data.alias);
+			console.log("USER:")
+			console.log(user)
+			//if(user.pass)
+			if(user){//check exist
+				console.log("FOUND USER")
+				//check for passphrase
+				//console.log(verifyPassword(user.passphrase,data.pass,user.salt))
+				if(verifyPassword(user.passphrase,data.pass,user.salt)==true){
+					console.log("PASS")
+					//heads.set('Set-Cookie', cookie.serialize('test','testss'))
 
-									const payload={
-										id:user.userId,
-										alias:user.alias,
-									}
+					const payload={
+						uuid:randomUUID(),
+						id:user.userId,
+						alias:user.alias
+					}
 
-									const token = createJWT(payload,SECRET);
-									console.log(token)
+					const token = createJWT(payload,SECRET);
+					console.log(token)
 
+					return new Response(JSON.stringify({api:"PASS"}),{status:200,headers:{
+						'Set-Cookie':cookie.serialize('token',token,{
+							httpOnly: true,
+							//maxAge: 60 * 60 * 24 * 7 // 1 week
+							//maxAge: 60 * 60 * 24  // 1 day ?
+							maxAge: 60  // 60 sec?
+						})
+					}});
 
-									return new Response(JSON.stringify({api:"PASS"}),{status:200,headers:{
-										'Set-Cookie':cookie.serialize('token',token,{
-
-										})
-									}});
-
-                }else{
-									console.log("FAIL PASSWORD")
-                  return new Response(JSON.stringify({api:"INCORRET"}),{status:200});
-                }
-            }else{
-                console.log("NOT FOUND")
-                return new Response(JSON.stringify({api:"INVALID"}),{status:200});
-            }
-            
-        }else{
-            console.log("EMPTY")
-            return new Response(JSON.stringify({api:"EMPTY"}),{status:200});
-        }
+				}else{
+					console.log("FAIL PASSWORD")
+					return new Response(JSON.stringify({api:"INCORRET"}),{status:200});
+				}
+			}else{
+				console.log("NOT FOUND")
+				return new Response(JSON.stringify({api:"INVALID"}),{status:200});
+			}
+				
+		}else{
+			console.log("EMPTY")
+			return new Response(JSON.stringify({api:"EMPTY"}),{status:200});
+		}
         
 		return new Response('',{status:200});
 	}
@@ -117,8 +131,13 @@ async function fetch(req){
 	}
 
 	if(pathname === '/signout' && req.method=='POST'){
+		//clear token
 		return new Response(JSON.stringify({api:"LOGOUT"}),{status:200,headers:{
-			'Set-Cookie':cookie.serialize('token','',{})
+			'Set-Cookie':cookie.serialize('token','',{
+				httpOnly: true,
+				maxAge:0,
+				//expires: Date.now()
+			})
 		}});
 	}
 
