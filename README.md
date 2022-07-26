@@ -24,6 +24,7 @@
 - simple Json web token > JWT
 - preact handler transpiler jsx to js for browser developement build 
 - cors simple ( deal with url script packages)
+- database sqlite simple test
 - web IDE ( importmap )
   - https://www.npmjs.com/package/es-module-shims
 
@@ -85,7 +86,7 @@ return new Response(JSXToJs,{
   headers:{'Content-Type':'text/javascript'}
 })
 ```
-
+File translate jsx to js for browser client to load.
 ```js
 // Bun built in variablies
 const transpiler = new Bun.Transpiler({ loader: "jsx", platform:"browser" });
@@ -93,10 +94,19 @@ let text = `<div>Hello World</div>`; // does not work but return  ";"
 text = `function Page(){return (<div>Hello World</div>)}`;//this works since warp around function
 let JSXToJs = transpiler.transformSync(text);
 ```
-JSX
+Simple hello world text file JSX
 ```jsx
 <div>Hello World</div>
 ```
+Note this does not work correct.
+
+```jsx
+function Hello(){
+  return(<div>Hello World</div>)
+}
+```
+Should be something like this.
+
 JS
 ```js
 import { jsx } from "preact/jsx-runtime"; // note since use of bun.Transpiler does not add import. Must be config.
@@ -157,6 +167,7 @@ export default jsx(
   - pre generate files for layer order query like middleware
  - preact two or three type of using by component class or jsx file.
  - odd bug for packages url for preact@latest for router async load
+ - localStorage access third for dev web host Access is denied
 
 # Bun runtime:
  Read more on https://bun.sh
@@ -175,7 +186,7 @@ https://preactjs.com/guide/v10/getting-started
 </script>
 ```
 
-## Web sandbox test:
+## Web Sandbox Build Test:
 - https://codedamn.com/playground/4tiQmWVHa6BkHvFwDp-T9
 
 # .env:

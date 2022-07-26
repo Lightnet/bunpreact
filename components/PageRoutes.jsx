@@ -19,7 +19,6 @@ export default function PageRoutes(){
     const test = await import("./auth/SignUp.jsx").then(module => module.default)
     console.log(typeof test)
     console.log(test)
-    
     return test;
   }
 
@@ -48,6 +47,12 @@ export default function PageRoutes(){
     <AsyncRoute
       path="/settings"
       getComponent={() => import("./pages/Settings.jsx").then(module => module.default)}
+      loading={()=>{return <Loading/>}}
+    />
+
+    <AsyncRoute
+      path="/todolist"
+      getComponent={() => import("./pages/ToDoList.jsx").then(module => module.default)}
       loading={()=>{return <Loading/>}}
     />
     

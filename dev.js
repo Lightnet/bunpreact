@@ -1,6 +1,5 @@
 /**
  * 
- * 
  * Information:
  * 	http web server
  */
@@ -17,8 +16,7 @@ import {
 	initDB, 
 	getDB, 
 	checkUser, 
-	addUser, 
-	checkUserPassphrase 
+	addUser
 } from "./database.js";
 import { isEmpty } from "./libs/helper.js"
 import { verifyPassword, createJWT } from "./libs/serveapi.js"
@@ -212,9 +210,10 @@ async function fetch(req){
 		JSXToJs = JSXToJs.replace('"preact"', `"preact"; import { jsx } from "preact/jsx-runtime"; `)
 		return new Response(JSXToJs,{headers:{'Content-Type':'text/javascript'}})
 	}
-
+  //console.log("LAST CHECK?")
+  console.log(join(import.meta.dir,"./public/", pathname))
 	return new Response(
-		file(join(import.meta.dir.dir,"./public/", pathname))
+		file(join(import.meta.dir,"./public/", pathname))
 	);
 }
 

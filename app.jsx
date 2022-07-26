@@ -6,15 +6,17 @@ import { h } from "preact";
 import AuthProvider from "/components/auth/AuthProvider.jsx"
 import AccessTopBar from "/components/AccessTopBar.jsx"
 import PageRoutes from "/components/PageRoutes.jsx"
+import ThemeProvider from "/components/theme/ThemeProvider.jsx"
 
 export default function App(){
 
-  return (
+  return (<ThemeProvider>
     <AuthProvider>
       <AccessTopBar/>
       <PageRoutes/>
     </AuthProvider>
-  )
+  </ThemeProvider>)
+  
 }
 
 // <Counter />

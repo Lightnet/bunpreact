@@ -6,6 +6,7 @@ import { useState, useEffect, useContext } from "preact/hooks"
 import { Link } from 'preact-router';
 import { AuthContext } from "./auth/AuthProvider.jsx"
 import { isObjEmpty } from "../libs/helper.js"
+import ToggleTheme from "/components/theme/ToggleTheme.jsx";
 
 export default function AccessTopBar(){
 
@@ -25,6 +26,7 @@ export default function AccessTopBar(){
 
   return (<div>
     <Link href="/">Home</Link><span> | </span>
+    <Link href="/todolist">To Do List</Link><span> | </span>
     
     {isLogin==true ? (
       <Fragment>
@@ -37,5 +39,6 @@ export default function AccessTopBar(){
       </Fragment>
     )}
     <Link href="/settings">Settings</Link> <span> | </span>
+    <ToggleTheme/> <span> | </span>
   </div>)
 }

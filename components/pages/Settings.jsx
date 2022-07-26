@@ -20,9 +20,9 @@ export default function Settings(){
   return (<div>
     <label>Settings </label>
     <div>
-      <a href="#" onClick={(e)=>clickView(e,'theme')}> Theme </a>
-      <a href="#" onClick={(e)=>clickView(e,'storage')}> Storage </a>
-      <a href="#" onClick={(e)=>clickView(e,'cookie')}> Cookies </a>
+      <a href="#" onClick={(e)=>clickView(e,'theme')}>Theme</a> <span> | </span>
+      <a href="#" onClick={(e)=>clickView(e,'storage')}>Storage</a> <span> | </span>
+      <a href="#" onClick={(e)=>clickView(e,'cookie')}>Cookies</a> <span> | </span>
     </div>
     <div>
       
