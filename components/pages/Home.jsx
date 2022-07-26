@@ -6,7 +6,7 @@ import { useState, useEffect, useContext } from "preact/hooks"
 import {AuthContext} from "/components/auth/AuthProvider.jsx"
 
 export default function Home(){
-  const [userName, setUserName] = useState("Guest0");
+  const [userName, setUserName] = useState("Guest");
   const { user } = useContext(AuthContext);
   //console.log(crypto)
   //console.log(crypto.randomUUID())

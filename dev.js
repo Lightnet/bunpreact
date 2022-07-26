@@ -64,7 +64,7 @@ async function fetch(req){
 	if(pathname === '/signin' && req.method=='POST'){
 		console.log("SIGN IN POST")
 
-		const data = (await req.json()).data;
+		const data = (await req.json());
 		console.log("data????")
 		console.log(data)
 		if(!isEmpty(data.alias) && !isEmpty(data.pass)){

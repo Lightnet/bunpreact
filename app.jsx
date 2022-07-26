@@ -8,17 +8,13 @@ import ESignUp from "/components/auth/SignUp.jsx";
 import ESignOut from "/components/auth/SignOut.jsx";
 import Home from "/components/pages/Home.jsx";
 import AuthProvider from "/components/auth/AuthProvider.jsx"
+import AccessTopBar from "/components/AccessTopBar.jsx"
 
 export default function App(){
 
   return (
     <AuthProvider>
-      <div>
-        <Link href="/"> Home </Link><span> | </span>
-        <Link href="/login">Login</Link><span> | </span>
-        <Link href="/signup">Sign Up</Link><span> | </span>
-        <Link href="/signout">Sign Out</Link>
-      </div>
+      <AccessTopBar/>
       <Router>
         <Home path="/" />
         <ELogin path="/login" />

@@ -5,7 +5,7 @@ import { h } from "preact"
 import { useState, useContext } from "preact/hooks"
 import { AuthContext } from "./AuthProvider.jsx";
 import { axiosapi } from "../../libs/clientapi.js";
-import {route} from 'preact-router';
+import { route } from 'preact-router';
 
 export default function ELogin(){
   const { setUser, setUserInfo } = useContext(AuthContext);
@@ -15,23 +15,18 @@ export default function ELogin(){
   const [email, setEmail] = useState("");
 
   function inputAlias(event){
-    //console.log(event.target.value)
     setAlias(event.target.value)
   }
 
   function inputPassphrase(event){
-    //console.log(event.target.value)
     setPassphrase(event.target.value)
   }
 
   function btnLogin(){
-    console.log("query")
-    
+    //console.log("query")
     axiosapi.post('/signin',{
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      data:{alias:alias,pass:passphrase}
-      //data:JSON.stringify({alias:alias,pass:passphrase})
+      alias:alias,
+      pass:passphrase
     }).then(response=>{
       console.log(response)
       if(response.data?.api=="TOKEN"){
@@ -48,14 +43,40 @@ export default function ELogin(){
   }
 
   function btnCancel(){
-
+    route("/",true)
   }
 
   return (<div>
-    <label>Login </label><br/>
-    <label>Alias: </label><input value={alias} onInput={inputAlias} /><br/>
-    <label>Passphrase: </label><input value={passphrase} onInput={inputPassphrase} /><br/>
-    <button onClick={btnLogin}>Login</button>
-    <button onClick={btnCancel}>Cancel</button>
+    <table>
+      <tbody>
+      <tr>
+        <td colspan="2">
+          <label>Login </label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>Alias: </label>
+        </td><td>
+          <input value={alias} onInput={inputAlias} /><br/>
+        </td>
+      </tr><tr>
+        <td>
+          <label>Passphrase: </label>
+        </td>
+        <td>
+          <input value={passphrase} onInput={inputPassphrase} />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="float:right;">
+          <button onClick={btnLogin}>Login</button>
+          <button onClick={btnCancel}>Cancel</button>    
+          </span>
+        </td>
+      </tr>
+    </tbody>
+    </table>
   </div>)
 }
