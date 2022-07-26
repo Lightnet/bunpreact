@@ -8,6 +8,8 @@ import {AuthContext} from "/components/auth/AuthProvider.jsx"
 export default function Home(){
   const [userName, setUserName] = useState("Guest0");
   const { user } = useContext(AuthContext);
+  //console.log(crypto)
+  //console.log(crypto.randomUUID())
 
   useEffect(()=>{
     setUserName(user);

@@ -16,10 +16,10 @@ export default function AuthProvider(props) {
 
   const auth = useMemo(() => {
     return { 
-        user, setUser,
-        userInfo, setUserInfo
+      user, setUser,
+      userInfo, setUserInfo
     }
-  }, [user])
+  }, [user, userInfo])
 
   return (
     <AuthContext.Provider value={auth}>

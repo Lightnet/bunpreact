@@ -64,7 +64,8 @@ async function fetch(req){
 	if(pathname === '/signin' && req.method=='POST'){
 		console.log("SIGN IN POST")
 
-		const data = await req.json();
+		const data = (await req.json()).data;
+		console.log("data????")
 		console.log(data)
 		if(!isEmpty(data.alias) && !isEmpty(data.pass)){
 			console.log("NOT EMPTY")
@@ -89,7 +90,7 @@ async function fetch(req){
 					const token = createJWT(payload,SECRET);
 					console.log(token)
 
-					return new Response(JSON.stringify({api:"PASS"}),{status:200,headers:{
+					return new Response(JSON.stringify({api:"TOKEN",user:payload}),{status:200,headers:{
 						'Set-Cookie':cookie.serialize('token',token,{
 							httpOnly: true,
 							//maxAge: 60 * 60 * 24 * 7 // 1 week
@@ -100,7 +101,7 @@ async function fetch(req){
 
 				}else{
 					console.log("FAIL PASSWORD")
-					return new Response(JSON.stringify({api:"INCORRET"}),{status:200});
+					return new Response(JSON.stringify({api:"INVALIDPASS"}),{status:200});
 				}
 			}else{
 				console.log("NOT FOUND")

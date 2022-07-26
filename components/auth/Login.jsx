@@ -2,9 +2,13 @@
 
 /** @jsx h */
 import { h } from "preact"
-import { useState } from "preact/hooks"
+import { useState, useContext } from "preact/hooks"
+import { AuthContext } from "./AuthProvider.jsx";
+import { axiosapi } from "../../libs/clientapi.js";
+import {route} from 'preact-router';
 
 export default function ELogin(){
+  const { setUser, setUserInfo } = useContext(AuthContext);
 
   const [alias, setAlias] = useState("");
   const [passphrase, setPassphrase] = useState("");
@@ -22,12 +26,24 @@ export default function ELogin(){
 
   function btnLogin(){
     console.log("query")
-    fetch('/signin',{
+    
+    axiosapi.post('/signin',{
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body:JSON.stringify({alias:alias,pass:passphrase})
+      data:{alias:alias,pass:passphrase}
+      //data:JSON.stringify({alias:alias,pass:passphrase})
     }).then(response=>{
       console.log(response)
+      if(response.data?.api=="TOKEN"){
+        console.log(response.data?.api)
+        setUserInfo(response.data.user)
+        //setUser(response.data.user.alias)
+        //console.log("USER NAME",response.data.user.alias)
+        setUser(response.data.user.alias)
+        route("/",true);
+      }else{
+        console.log("LOGIN ERROR")
+      }
     })
   }
 

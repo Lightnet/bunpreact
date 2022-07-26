@@ -3,7 +3,7 @@
   <head>
   	<meta charset="utf-8"/>
   	<meta name="description" content="bun preact render dev build">
-  	<meta name="keywords" content="HTML, Javascript">
+  	<meta name="keywords" content="HTML, Javascript, Preact. Bun">
   	<meta name="author" content="John Doe">
   	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'nonce-n0nce'" />
@@ -12,14 +12,17 @@
     "preact":"https://cdn.jsdelivr.net/npm/preact/dist/preact.mjs",
     "preact":"https://unpkg.com/preact?module",
     "preact/jsx-runtime":"https://cdn.jsdelivr.net/npm/preact@10.10.0/jsx-runtime/dist/jsxRuntime.module.js"
+    "axios":"https://unpkg.com/axios",
 	-->
     <script type="importmap" nonce="n0nce">
     {
       "imports":{
+        "axios":"https://unpkg.com/@bundled-es-modules/axios",
         "preact":"https://unpkg.com/preact?module",
         "preact/hooks":"https://unpkg.com/preact@10.10.0/hooks/dist/hooks.module.js",
         "preact-router":"https://unpkg.com/preact-router@4.1.0/dist/preact-router.module.js",
         "preact/jsx-runtime":"https://unpkg.com/preact@10.10.0/jsx-runtime/dist/jsxRuntime.module.js"
+        
       }
     }
     </script>
