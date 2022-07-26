@@ -12,7 +12,7 @@
 # Information:
   Prototype build. For preact but note there some react convert and alias since bun built react js.
 
-  Using the preact components since browser only support js module as it need to transpiler for to load and read for browser javascript to understand to render the html elements.
+  Using the preact components since browser only support js module as it need to transpiler or transform from babel.js for to load and read for browser javascript to understand to render the html elements.
 
   Note this is test build. Still learning.
 
@@ -156,6 +156,7 @@ export default jsx(
   - watch files changes (bun not build)
   - pre generate files for layer order query like middleware
  - preact two or three type of using by component class or jsx file.
+ - odd bug for packages url for preact@latest for router async load
 
 # Bun runtime:
  Read more on https://bun.sh
@@ -176,6 +177,12 @@ https://preactjs.com/guide/v10/getting-started
 
 ## Web sandbox test:
 - https://codedamn.com/playground/4tiQmWVHa6BkHvFwDp-T9
+
+# .env:
+```
+PORT=3000
+SECRET=32char
+```
 
 # References:
  - https://github.com/oven-sh/bun/tree/main/examples

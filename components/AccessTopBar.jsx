@@ -24,10 +24,11 @@ export default function AccessTopBar(){
   },[userInfo])
 
   return (<div>
-    <Link href="/"> Home </Link><span> | </span>
+    <Link href="/">Home</Link><span> | </span>
+    
     {isLogin==true ? (
       <Fragment>
-        <Link href="/signout">Sign Out</Link>
+        <Link href="/signout">Sign Out</Link><span> | </span>
       </Fragment>
     ):(
       <Fragment>
@@ -35,5 +36,6 @@ export default function AccessTopBar(){
         <Link href="/signup">Sign Up</Link><span> | </span>
       </Fragment>
     )}
+    <Link href="/settings">Settings</Link> <span> | </span>
   </div>)
 }
