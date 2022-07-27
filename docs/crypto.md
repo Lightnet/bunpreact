@@ -65,6 +65,12 @@ console.log(checkhash);
 ```
 
 
+
+
+https://stackoverflow.com/questions/19822643/what-is-an-alternative-for-bcrypt-to-use-with-node
+
+
+
 ```js
 const password = "12345"
 let salt = crypto.randomBytes(16).toString('hex');

@@ -3,6 +3,18 @@
 
 import crypto,{ randomUUID } from 'crypto';
 
+/**
+ * generates random string of characters i.e salt
+ * @function
+ * @param {number} length - Length of the random string.
+ */
+ const genRandomString = function(length){
+  return crypto.randomBytes(Math.ceil(length/2))
+          .toString('hex') /** convert to hexadecimal format */
+          .slice(0,length);   /** return required number of characters */
+};
+
+
 const PASSWORD_LENGTH = 256;
 const SALT_LENGTH = 64;
 const ITERATIONS = 10000;
@@ -28,8 +40,7 @@ export function verifyPassword(passhash,pass,salt){
 //console.log("isPass")
 //console.log(isPass)
 
-
-//JSON TOKEN SIGN KEY
+//JSON WEB TOKEN SIGN KEY
 
 const toBase64 = obj => {
   // converts the obj to a string
@@ -118,6 +129,14 @@ export function verifyJWT(jwtoken, secret, options){
   }
 }
 
+export function JWTtoObj(jwtoken){
+  const sPayload = jwtoken.split('.')[1];
+  let payload=Buffer.from(sPayload, 'base64').toString('ascii')
+  return JSON.parse(payload);
+}
+
+
+
 //const payload = {
   //iss: 'a_random_server_name',//information about the server that issued the token
   //exp: 872990,// tokens expiry date in milliseconds
@@ -191,14 +210,3 @@ decipher.update(encrypted, "base64");
 
 console.log("Decrypted: %s", decipher.final("ascii"));
 */
-
-
-
-
-
-
-
-
-
-
-

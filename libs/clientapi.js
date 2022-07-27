@@ -17,6 +17,13 @@ export {
   axiosapi
 }
 
+//get token user data "header.object.sign" base64
+export function JWTtoObj(jwtoken){
+  const sPayload = jwtoken.split('.')[1];
+  let payload=Buffer.from(sPayload, 'base64').toString('ascii')
+  return JSON.parse(payload);
+}
+
 /*
 const axiosapi={};
 export {
