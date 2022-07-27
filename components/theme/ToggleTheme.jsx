@@ -1,4 +1,10 @@
-// browser client
+/*
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+
+  browser client
+*/
 
 /** @jsx h */
 import { h } from "preact";
@@ -7,6 +13,7 @@ import {
   useState,
   useContext
 } from "preact/hooks";
+import { capFirstLetter } from "../../libs/helper.js"
 
 import { ThemeContext } from "./ThemeProvider.jsx";
 
@@ -41,6 +48,6 @@ export default function ToggleTheme(){
   }
 
   return (
-    <a href="#" onClick={toggleTheme}>Theme {theme}</a>
+    <a href="#" onClick={toggleTheme}>Theme {capFirstLetter(theme)}</a>
   )
 }

@@ -1,6 +1,10 @@
 /**
- * Information: 
- *  Browser client entry.
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+  
+   Information: 
+    Browser client entry.
  */
 
 /** @jsx h */

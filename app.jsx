@@ -1,3 +1,12 @@
+/*
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+
+  Information:
+    For preact components set up. This area handle context data.
+
+*/
 
 /** @jsx h */
 import { h } from "preact";

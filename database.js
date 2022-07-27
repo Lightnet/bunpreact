@@ -1,4 +1,8 @@
-
+/*
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+*/
 
 import { Database } from "bun:sqlite";
 import { generateHashPassword } from "./libs/serveapi.js"

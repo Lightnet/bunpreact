@@ -1,4 +1,11 @@
-// browser client
+/*
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+
+  Information:
+    This handle url page address route view components set.
+*/
 
 /** @jsx h */
 import { h } from "preact"
@@ -62,8 +69,7 @@ export default function PageRoutes(){
 /*
 
 <ELogin path="/login" />
-    <ESignUp path="/signup" />
-    <ESignOut path="/signout" />
-    <Settings path="/settings" />
-
+<ESignUp path="/signup" />
+<ESignOut path="/signout" />
+<Settings path="/settings" />
  */

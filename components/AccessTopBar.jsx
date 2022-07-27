@@ -1,4 +1,10 @@
-// browser client
+/*
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+
+  browser client
+*/
 
 /** @jsx h */
 import { h, Fragment } from "preact"

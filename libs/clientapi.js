@@ -1,8 +1,10 @@
+/*
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+*/
+
 //import axios from "https://unpkg.com/@bundled-es-modules/axios@0.27.2/index.js";
-//const axios = await import("axios");
-//console.log("axios")
-//console.log(axios)
-//console.log("axios>>>")
 //console.log(await import("https://unpkg.com/axios/dist/axios.min.js"))
 
 import { axios } from 'axios';

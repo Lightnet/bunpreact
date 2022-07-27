@@ -1,3 +1,9 @@
+/*
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+*/
+
 // https://www.geeksforgeeks.org/node-js-password-hashing-crypto-module/
 // 
 

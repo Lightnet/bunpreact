@@ -1,8 +1,11 @@
-/**
- * 
- * Information:
- * 	http web server
- */
+/*
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+
+	Information:
+		http web server
+*/
 
 // mozilla docs/web/api/headers
 
