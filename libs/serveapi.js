@@ -90,6 +90,46 @@ export function createJWT(payLoad, secret, options){
   return jsonWebToken;
 }
 
+export function verifyJWT(jwtoken, secret, options){
+  const header = {
+    alg: 'HS256',
+    typ: 'JWT',
+  };
+  const b64Header = toBase64 (header);
+  const jwtB64Header = replaceSpecialChars(b64Header);
+
+  const sPayload = jwtoken.split('.')[1];
+  const signaturePart = jwtoken.split('.')[2];
+  let payload=Buffer.from(sPayload, 'base64').toString('ascii')
+  //console.log(payload)
+  payload = JSON.parse(payload)
+  //console.log("payload")
+  //console.log(payload)
+
+  const b64Payload = toBase64(payload);
+  const jwtB64Payload = replaceSpecialChars(b64Payload);
+
+  const signature = createSignature(jwtB64Header,jwtB64Payload,secret);
+
+  if(signature === signaturePart){
+    console.log("FOUND")
+  }else{
+    console.log("NOT FOUND")
+  }
+}
+
+//const payload = {
+  //iss: 'a_random_server_name',//information about the server that issued the token
+  //exp: 872990,// tokens expiry date in milliseconds
+  // information about some random user
+  //name: 'John Doe',
+  //email: 'myemail@test.com',
+  //isHuman: true,
+//};
+
+//verifyJWT(testtoken, secret)
+
+
 /*
 const header = {
   alg: 'HS256',
@@ -121,4 +161,44 @@ console.log ("the signature is: ",signature);
 const jsonWebToken = jwtB64Header + '.' + jwtB64Payload + '.' + signature;
 console.log ("the JWT is :",jsonWebToken);
 */
+
+// https://stackoverflow.com/questions/14218925/how-can-i-decrypt-a-hmac
+// https://github.com/nginx/njs/issues/390
+// https://stackoverflow.com/questions/54062583/how-to-verify-a-signed-jwt-with-subtlecrypto-of-the-web-crypto-api
+/*
+// key and iv   
+var key = crypto.createHash("sha256").update("OMGCAT!", "ascii").digest();
+var iv = "1234567890123456";
+
+// this is the string we want to encrypt/decrypt
+var secret = "ermagherd";
+
+console.log("Initial: %s", secret);
+
+// create a aes256 cipher based on our password
+var cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+// update the cipher with our secret string
+cipher.update(secret, "ascii");
+// save the encryption as base64-encoded
+var encrypted = cipher.final("base64");
+
+console.log("Encrypted: %s", encrypted);
+
+// create a aes267 decipher based on our password
+var decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+// update the decipher with our encrypted string
+decipher.update(encrypted, "base64");
+
+console.log("Decrypted: %s", decipher.final("ascii"));
+*/
+
+
+
+
+
+
+
+
+
+
 
