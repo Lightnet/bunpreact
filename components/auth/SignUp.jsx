@@ -9,8 +9,8 @@
 /** @jsx h */
 import { h } from "preact"
 import { useState } from "preact/hooks"
-import { AuthContext } from "./AuthProvider.jsx";
-import { axiosapi } from "../../libs/clientapi.js";
+//import { AuthContext } from "./AuthProvider.jsx";
+//import { axiosapi } from "../../libs/clientapi.js";
 import { route } from 'preact-router';
 
 export default function ELogin(){

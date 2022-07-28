@@ -39,6 +39,14 @@ function initDB(){
         salt TEXT,
         date TEXT
       )`);
+      
+    db.run(
+      `CREATE TABLE IF NOT EXISTS todolist (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userId TEXT,
+        content TEXT,
+        date TEXT
+      )`);
   }
 }
 

@@ -36,6 +36,7 @@ export default function AccessTopBar(){
     
     {isLogin==true ? (
       <Fragment>
+        <Link href="/account">Account</Link><span> | </span>
         <Link href="/signout">Sign Out</Link><span> | </span>
       </Fragment>
     ):(

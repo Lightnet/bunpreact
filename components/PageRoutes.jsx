@@ -37,6 +37,12 @@ export default function PageRoutes(){
   return (<Router>
     <Home path="/" />
     <AsyncRoute
+      path="/account"
+      getComponent={() => import("./pages/Account.jsx").then(module => module.default)}
+      loading={()=>{return <Loading/>}}
+    />
+
+    <AsyncRoute
       path="/login"
       getComponent={() => import("./auth/Login.jsx").then(module => module.default)}
       loading={()=>{return <Loading/>}}

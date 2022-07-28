@@ -18,8 +18,8 @@ export default function SignOut(){
   const { setUser, setUserInfo } = useContext(AuthContext);
   const [alias, setAlias] = useState("");
 
-  function btnLogin(){
-    console.log("query")
+  function btnSignOut(){
+    //console.log("query")
 
     axiosapi.post('/signout',{
       api:"LOGOUT"
@@ -50,12 +50,12 @@ export default function SignOut(){
   }
 
   function btnCancel(){
-
+    route("/", true)
   }
 
   return (<div>
     <label>Are you sure you want to sign out?</label><br/>
-    <button onClick={btnLogin}>Logout</button>
+    <button onClick={btnSignOut}>Logout</button>
     <button onClick={btnCancel}>Cancel</button>
   </div>)
 }

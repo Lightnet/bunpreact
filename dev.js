@@ -184,6 +184,29 @@ async function fetch(req){
 			headers
 		});
 	}
+
+  if(pathname=='/api/todolist'){
+    if(req.method=='POST'){
+      let list = [];
+
+      return new Response(JSON.stringify({
+        api:'ADD',
+        list:list
+      }),{status:200});
+    }else{
+      console.log("GET LIST")
+      let list = [];
+
+      return new Response(JSON.stringify({
+        api:'LIST',
+        list:list
+      }),{status:200});
+
+      //return new Response('',{status:200});
+    }
+  }
+
+
 	if(req.url.endsWith('.js')){
 		const filepath = new URL( req.url).pathname;
 		const blob = file(join(import.meta.dir+"/", filepath))		  
