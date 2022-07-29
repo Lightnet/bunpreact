@@ -70,14 +70,9 @@ function checkUser(name){
   return stmt.get(name) || null;
 }
 
-function checkUserPassphrase(name,pass){
-    return null;
-}
-
 function addUser(name, pass){
   //const insert = db.prepare("INSERT INTO user (alias, passphrase) VALUES ($alias, $pass)");
   try {
-    
     const SALT = crypto.randomBytes(16).toString('hex');
     const _hash = generateHashPassword(pass,SALT);
     db.run(
@@ -94,10 +89,64 @@ function addUser(name, pass){
   }
 }
 
+function addToDoList(content){
+  
+  try {
+    const UUID = crypto.randomUUID();
+    const data = db.run(
+      "INSERT INTO todolist ( content ) VALUES ( ? )",
+      content
+    );
+    console.log(data)
+    return true;
+  }catch(error){
+    console.log("error", error)
+    return false;
+  }
+}
+
+function getToDoList(){
+  try {
+    const stmt = db.query("SELECT * FROM todolist");
+    return stmt.all();
+  }catch(error){
+    console.log("error", error)
+    return false;
+  }
+}
+
+function deleteToDoList(id){
+
+  try {
+    db.run(`DELETE FROM todolist WHERE id = ${id}`);
+    return true;
+  }catch(error){
+    console.log("error", error)
+    return false;
+  }
+}
+
+function updateToDoList(id,content){
+  //console.log("id:",id)
+  //console.log("content:",content)
+  try {
+    const stmt = db.query(`UPDATE todolist SET content = '${content}' WHERE id = ${id}`);
+    //console.log(stmt)
+    stmt.run();
+    return true;
+  }catch(error){
+    console.log("error", error)
+    return false;
+  }
+}
+
 export {
   initDB,
   getDB,
   checkUser,
-  checkUserPassphrase,
-  addUser
+  addUser,
+  addToDoList,
+  getToDoList,
+  updateToDoList,
+  deleteToDoList
 }

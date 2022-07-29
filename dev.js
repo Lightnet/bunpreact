@@ -11,7 +11,7 @@
 
 import crypto,{ randomUUID } from 'crypto';
 import {file, serve} from "bun";
-//import fs from "node:fs"
+import fs from "node:fs"
 import { join } from "node:path";
 import livereload from "bun-livereload";
 import cookie from "cookie";
@@ -19,7 +19,11 @@ import {
 	initDB, 
 	getDB, 
 	checkUser, 
-	addUser
+	addUser,
+	addToDoList,
+	getToDoList,
+	updateToDoList,
+	deleteToDoList
 } from "./database.js";
 import { isEmpty } from "./libs/helper.js"
 import { verifyPassword, createJWT } from "./libs/serveapi.js"
@@ -34,13 +38,31 @@ initDB();
 
 let PORT = process.env.PORT || 3000;
 
+const apiPathName = join(  import.meta.dir ,"/routes/api")
+console.log(apiPathName)
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+
+let apiFiles = [];
+const APIFiles = new Map()
+// const contacts = new Map()
+// contacts.set('Jessie', {phone: "213-555-1234", address: "123 N 1st Ave"})
+// contacts.get('Jessie') // {phone: "213-555-1234", address: "123 N 1st Ave"}
+// contacts.delete('Jessie') // true
+
+fs.readdirSync(apiPathName).forEach(function(file) {
+    console.log(file)
+    console.log(file.endsWith('.js'))
+  //require("./routes/" + file);
+});
+
 async function fetch(req){
 	//console.log("/////////////////")
 	const headers = new Headers();
 	headers.set('Content-Type','text/html; charset=UTF-8')
-	console.log("url page:",req.url);
+	//console.log("req:",req);
+	//console.log("url page:",req.url);
 	//console.log("METHOD:",req.method);
-	const {pathname} = new URL(req.url)
+	const { pathname } = new URL(req.url)
 	//console.log("pathname",pathname);
 
 	const cookies = cookie.parse(req.headers.get('cookie') || '');
@@ -50,9 +72,8 @@ async function fetch(req){
 		const text = cookies.token.split(".")[1]
 		//console.log(Buffer.from(text, 'base64').toString('ascii'))
 	}else{
-		console.log("TOKEN: NULL")
+		//console.log("TOKEN: NULL")
 	}
-
 
 	if(pathname === '/favicon.ico'){
 		//heads.set('Set-Cookie', cookie.serialize('test','testss'))
@@ -176,7 +197,7 @@ async function fetch(req){
 		headers.append('Access-Control-Allow-Origin','*')
 		headers.append('Access-Control-Allow-Origin','https://unpkg.com/')
 		//headers.append('Access-Control-Allow-Origin','http://localhost:3000/')
-		headers.set('Access-Control-Allow-Methods','GET, PUT, POST, DELETE')
+		headers.set('Access-Control-Allow-Methods','GET, PUT, POST, DELETE, PATCH')
 		headers.set('Access-Control-Allow-Headers',"Origin, Depth, User-Agent, X-file-Size, X-Request-With, Content-Type, Accept")
 		
 		//console.log(headers)
@@ -186,16 +207,71 @@ async function fetch(req){
 	}
 
   if(pathname=='/api/todolist'){
+		console.log("TODOLIST METHOD:",req.method)
+		console.log("req",req)
+		console.log(req.method)
+		console.log(req.method.length)
+		
     if(req.method=='POST'){
-      let list = [];
-
-      return new Response(JSON.stringify({
-        api:'ADD',
-        list:list
-      }),{status:200});
-    }else{
+			const data = await req.json();
+			if(data?.api=="CREATE"){
+				if(!isEmpty(data.content)){
+					addToDoList(data.content)
+					return new Response(JSON.stringify({
+						api:'ADD',
+						id:''
+					}),{status:200});
+				}else{
+					return new Response(JSON.stringify({
+						api:'EMPTY',
+					}),{status:200});
+				}
+			}else if(data?.api=="DELETE"){
+				if(!isEmpty(data.id)){
+					const isPass = deleteToDoList(data.id)
+					console.log("isPass: ",isPass)
+					return new Response(JSON.stringify({
+						api:'DELETE',
+						id:''
+					}),{status:200});
+				}else{
+					return new Response(JSON.stringify({
+						api:'EMPTY',
+					}),{status:200});
+				}
+			}else{
+				return new Response(JSON.stringify({
+					api:'ERROR',
+				}),{status:200});
+			}
+      
+		}else if(req.method=='PUT'){
+			const data = await req.json();
+			console.log("data:",data)
+			if(!isEmpty(data.id) && !isEmpty(data.content)){
+				const query = updateToDoList(data.id,data.content);
+				console.log("query: ",query)
+				return new Response(JSON.stringify({
+        	api:'UPDATE',
+					id:''
+      	}),{status:200});
+			}
+		}else if(req.method=="DELETE"){//DOES NOT WORK return empty string
+			console.log("DELETE HERE???")
+			/*
+			const data = await req.json();
+			if(!isEmpty(data.id)){
+				console.log("data.id:",data.id)
+				deleteToDoList(data.id)
+				return new Response(JSON.stringify({
+        	api:'DELETE',
+					id:''
+      	}),{status:200});
+			}*/
+		}else if(req.method=='GET'){
       console.log("GET LIST")
-      let list = [];
+      let list = getToDoList();
+			if(list==null){list=[];}
 
       return new Response(JSON.stringify({
         api:'LIST',
@@ -203,9 +279,12 @@ async function fetch(req){
       }),{status:200});
 
       //return new Response('',{status:200});
-    }
+    }else{
+			return new Response(JSON.stringify({
+        api:'ERROR',
+      }),{status:200});
+		}
   }
-
 
 	if(req.url.endsWith('.js')){
 		const filepath = new URL( req.url).pathname;

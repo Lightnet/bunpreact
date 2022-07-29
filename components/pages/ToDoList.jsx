@@ -30,26 +30,86 @@ export default function ToDoList(){
     axiosapi.get('/api/todolist')
     .then(resp=>{
       console.log(resp)
+      if(resp.data?.api==='LIST'){
+        setToDoList(resp.data?.list)
+      }
     }).catch(error=>{
       console.log(error)
     })
   }
 
   function addToDoList(){
+    axiosapi.post('/api/todolist',{
+      api:"CREATE",
+      content:textContent
+    }).then(resp=>{
+      console.log(resp)
+      if(resp.data?.api=="ADD"){
+        getToDoList();
+        //setToDoList(state=>[...state,{
+          //id:crypto.randomUUID(),
+          //content:textContent
+        //}])
+      }
+    }).catch(err=>{
+      console.log(err)
+    })
+    /*
     setToDoList(state=>[...state,{
       id:crypto.randomUUID(),
       content:textContent
     }])
+    */
   }
 
   function deleteContentId(id){
     console.log("DELETE:",id)
-    setToDoList(state=>state.filter(item=>item.id!==id))
+    //{data:{id:id}}
+
+    /*
+    fetch('/api/todolist?id=0', {
+      method: 'DELETE'
+    }).then(() => {
+      console.log('removed');
+    }).catch(err => {
+      console.error(err)
+    });*/
+
+
+    axiosapi.request({
+      //url:`/api/todolist?id=${id}`,
+      url:`/api/todolist`,
+      method: 'POST',
+      data: {api:"DELETE",id:id}
+    })
+    .then(resp=>{
+      console.log(resp)
+      if(resp.data?.api=="DELETE"){
+        setToDoList(state=>state.filter(item=>item.id!==id))  
+      }
+    }).catch(err=>{
+      console.log(err)
+    })
+    
+    //setToDoList(state=>state.filter(item=>item.id!==id))
   }
 
-  function updateContentId(id){
+  function updateContentId(id, content){
     console.log("UPDATE:",id)
-    setToDoList(state=>state.filter(item=>item.id!==id))
+    axiosapi.request({
+      url:'/api/todolist',//,
+      method: 'PUT',
+      data: {id:id, content:content}
+    })
+    .then(resp=>{
+      console.log(resp)
+      if(resp.data?.api=="UPDATE"){
+        setTextId("")
+      }
+    }).catch(err=>{
+      console.log(err)
+    })
+    //setToDoList(state=>state.filter(item=>item.id!==id))
   }
 
   function selectEditId(id,text){
@@ -87,7 +147,7 @@ export default function ToDoList(){
         {textId === item.id ?(
           <Fragment>
             <input name={item.id} value={textValue} onInput={inputTextValue} />
-            <button onClick={updateContentId}> Update </button>
+            <button onClick={()=>updateContentId(item.id,textValue)}> Update </button>
           </Fragment>
         ):(
           <Fragment>
