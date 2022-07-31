@@ -14,7 +14,7 @@
 
   Using the preact components since browser only support js module as it need to transpiler or transform from babel.js for to load and read for browser javascript to understand to render the html elements.
 
-  Note this is test build. Still learning.
+  Note this is test build. Still learning. Some of the Bun runtime features are in beta and features not yet added to debug better.
 
 ## Features:
 - Bun serve

@@ -19,11 +19,7 @@ import {
 	initDB, 
 	getDB, 
 	checkUser, 
-	addUser,
-	addToDoList,
-	getToDoList,
-	updateToDoList,
-	deleteToDoList
+	addUser
 } from "./database.js";
 import { isEmpty } from "./libs/helper.js"
 import { verifyPassword, createJWT } from "./libs/serveapi.js"
@@ -49,12 +45,19 @@ const APIFiles = new Map()
 // contacts.get('Jessie') // {phone: "213-555-1234", address: "123 N 1st Ave"}
 // contacts.delete('Jessie') // true
 
-async function sloadModule(fileName){
-	const m = await import(join(import.meta.dir+"/routes/", fileName)).then(module => module.default);
-	//console.log("m fun:",fileName)
-	//console.log(m.constructor.name) // check for AsyncFunction and Function tags  
-	//console.log(m)
-	return m;
+async function loadHandle(fileName){
+	try{
+		const m = await import(join(import.meta.dir+"/routes/", fileName)).then(module => module.default);
+		//console.log("m fun:",fileName)
+		//console.log(m.constructor.name) // check for AsyncFunction and Function tags  
+		//console.log(m)
+		return m;
+	}catch(e){
+		console.log("ERROR HANDLE LOADING...")
+		console.log(e)
+		return null;
+	}
+	
 }
 
 function sleep(ms){
@@ -62,43 +65,38 @@ function sleep(ms){
 }
 
 fs.readdirSync(apiPathName).forEach(async function(file) {
-    //console.log(file)
-    //console.log(file.endsWith('.js'))
-    if(file.endsWith('.js')){
-        const fileName = join("/api/",file);
-				//console.log("fileName");
-        //console.log(fileName);
-				let urlName = fileName.replace(".js","");//remove .js to blank
-				console.log(urlName);
-				//console.log(join(import.meta.dir, fileName))
-				//console.log(fileName);
-				const loadFun = await sloadModule(fileName);
-				//console.log("modfile")
-				//console.log(loadFun)
-				//console.log(loadFun.constructor.name)
+	//console.log(file)
+	//console.log(file.endsWith('.js'))
+	if(file.endsWith('.js')){
+		const fileName = join("/api/",file);
+		//console.log("fileName", fileName);
+		let urlName = fileName.replace(".js","");//remove .js to blank
+		console.log(urlName);
+		//console.log(join(import.meta.dir, fileName))
 
-				APIFiles.set(urlName,{
-					handler:loadFun
-				});
-    }
-  //require("./routes/" + file);
+		const loadFun = await loadHandle(fileName);
+		// set up url and handler request
+		APIFiles.set(urlName,{
+			handler:loadFun
+		});
+	}
 });
 
 //console.log(APIFiles.get("/api/test"))
 //console.log(await APIFiles.get("/api/test").handler());
-await sleep(100);
-const typefun = await APIFiles.get("/api/test").handler;
-console.log(typefun.constructor.name)
-console.log(typefun)
+//await sleep(100);
+//const typefun = await APIFiles.get("/api/test").handler;
+//console.log(typefun.constructor.name)
+//console.log(typefun)
 //console.log(await typefun())
-console.log("AWAIT S")
-const typefun1 = APIFiles.get("/api/stest").handler;
-console.log(typefun1.constructor.name)
+//console.log("AWAIT S")
+//const typefun1 = APIFiles.get("/api/stest").handler;
+//console.log(typefun1.constructor.name)
 //console.log(typefun1)
 //console.log(await typefun1())
 
-let testURL = "/sdf/api/test"
-testURL = "/as/api/test"
+//let testURL = "/sdf/api/test"
+//testURL = "/as/api/test"
 //testURL = "/test"
 //console.log("MATCH > /api/")
 //console.log(testURL.match("/api/"))
@@ -110,7 +108,7 @@ testURL = "/as/api/test"
 //};
 //console.log(sum.constructor.name)
 
-
+// browser input request query
 async function fetch(req){
 	//console.log("/////////////////")
 	const headers = new Headers();
@@ -140,6 +138,7 @@ async function fetch(req){
 		return new Response('',{status:204});
 	}
 
+	/*
 	if(pathname === '/signin' && req.method=='POST'){
 		console.log("SIGN IN POST")
 
@@ -194,7 +193,7 @@ async function fetch(req){
         
 		return new Response('',{status:200});
 	}
-
+	*/
 	if(pathname === '/signup' && req.method=='POST'){
 		const data = await req.json();
 		if(!isEmpty(data.alias) && !isEmpty(data.pass)){
@@ -235,7 +234,9 @@ async function fetch(req){
 
 	//CHECK PATH API 
 	if(pathname.search("/api/")==0){
+		console.log("API FOUND:", pathname)
 		if(APIFiles.has(pathname)==true){//match file name
+			
 			const APIName = APIFiles.get(pathname);
 			if(APIName.handler){
 				if(APIName.handler.constructor.name=='Function'){
@@ -281,86 +282,6 @@ async function fetch(req){
 		});
 	}
 
-  if(pathname=='/api/todolist'){
-		console.log("TODOLIST METHOD:",req.method)
-		console.log("req",req)
-		console.log(req.method)
-		console.log(req.method.length)
-		
-    if(req.method=='POST'){
-			const data = await req.json();
-			if(data?.api=="CREATE"){
-				if(!isEmpty(data.content)){
-					addToDoList(data.content)
-					return new Response(JSON.stringify({
-						api:'ADD',
-						id:''
-					}),{status:200});
-				}else{
-					return new Response(JSON.stringify({
-						api:'EMPTY',
-					}),{status:200});
-				}
-			}else if(data?.api=="DELETE"){
-				if(!isEmpty(data.id)){
-					const isPass = deleteToDoList(data.id)
-					console.log("isPass: ",isPass)
-					return new Response(JSON.stringify({
-						api:'DELETE',
-						id:''
-					}),{status:200});
-				}else{
-					return new Response(JSON.stringify({
-						api:'EMPTY',
-					}),{status:200});
-				}
-			}else{
-				return new Response(JSON.stringify({
-					api:'ERROR',
-				}),{status:200});
-			}
-      
-		}else if(req.method=='PUT'){
-			const data = await req.json();
-			console.log("data:",data)
-			if(!isEmpty(data.id) && !isEmpty(data.content)){
-				const query = updateToDoList(data.id,data.content);
-				console.log("query: ",query)
-				return new Response(JSON.stringify({
-        	api:'UPDATE',
-					id:''
-      	}),{status:200});
-			}
-		}else if(req.method=="DELETE"){//DOES NOT WORK return empty string
-			console.log("DELETE HERE???")
-			/*
-			const data = await req.json();
-			if(!isEmpty(data.id)){
-				console.log("data.id:",data.id)
-				deleteToDoList(data.id)
-				return new Response(JSON.stringify({
-        	api:'DELETE',
-					id:''
-      	}),{status:200});
-			}*/
-		}else if(req.method=='GET'){
-      console.log("GET LIST")
-      let list = getToDoList();
-			if(list==null){list=[];}
-
-      return new Response(JSON.stringify({
-        api:'LIST',
-        list:list
-      }),{status:200});
-
-      //return new Response('',{status:200});
-    }else{
-			return new Response(JSON.stringify({
-        api:'ERROR',
-      }),{status:200});
-		}
-  }
-
 	if(req.url.endsWith('.js')){
 		const filepath = new URL( req.url).pathname;
 		const blob = file(join(import.meta.dir+"/", filepath))		  
@@ -402,7 +323,8 @@ console.log(`Bun serve http://localhost:${PORT}`)
 const server = serve({
   //port: 3000,
   port: Number(PORT),//error on string
-  fetch:livereload(fetch),
+  //fetch:livereload(fetch),
+	fetch:fetch,
   error(error) {//error: Error
     return new Response("Uh oh!!\n" + error.toString(), { status: 500 });
   },

@@ -30,7 +30,7 @@ export default function ELogin(){
 
   function btnLogin(){
     //console.log("query")
-    axiosapi.post('/signin',{
+    axiosapi.post('/api/signin',{
       alias:alias,
       pass:passphrase
     }).then(response=>{
