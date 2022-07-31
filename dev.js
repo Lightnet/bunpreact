@@ -15,36 +15,22 @@ import fs from "node:fs"
 import { join } from "node:path";
 //import livereload from "bun-livereload";
 import cookie from "cookie";
-import { 
-	initDB, 
-	//getDB, 
-	//checkUser, 
-	//addUser
-} from "./database.js";
-//import { isEmpty } from "./libs/helper.js"
-//import { verifyPassword, createJWT } from "./libs/serveapi.js"
+import { initDB } from "./database.js";
+import { sleep } from "./libs/helper.js"
+//import { render } from "preact";
+import render from 'preact-render-to-string';
 
-//console.log("process.env.PORT")
-//console.log(process.env.PORT)
-
-//console.log(process.env.SECRET)
+//console.log("process.env.PORT", process.env.PORT)
+//console.log("process.env.SECRET", process.env.SECRET)
 //const SECRET = process.env.SECRET;
 
-initDB();
+initDB();//init database
 
-let PORT = process.env.PORT || 3000;
-
-const apiPathName = join(  import.meta.dir ,"/routes/api")
+const PORT = process.env.PORT || 3000;
+// API PATH
+const apiPathName = join(import.meta.dir ,"/routes/api")
 //console.log(apiPathName)
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
-
-//let apiFiles = [];
 const APIFiles = new Map()
-// const contacts = new Map()
-// contacts.set('Jessie', {phone: "213-555-1234", address: "123 N 1st Ave"})
-// contacts.get('Jessie') // {phone: "213-555-1234", address: "123 N 1st Ave"}
-// contacts.delete('Jessie') // true
-
 async function loadHandle(fileName){
 	try{
 		const m = await import(join(import.meta.dir+"/routes/", fileName)).then(module => module.default);
@@ -57,23 +43,15 @@ async function loadHandle(fileName){
 		console.log(e)
 		return null;
 	}
-	
 }
-
-function sleep(ms){
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 fs.readdirSync(apiPathName).forEach(async function(file) {
 	//console.log(file)
-	//console.log(file.endsWith('.js'))
 	if(file.endsWith('.js')){
 		const fileName = join("/api/",file);
 		//console.log("fileName", fileName);
 		let urlName = fileName.replace(".js","");//remove .js to blank
-		console.log(urlName);
+		//console.log(urlName);
 		//console.log(join(import.meta.dir, fileName))
-
 		const loadFun = await loadHandle(fileName);
 		// set up url and handler request
 		APIFiles.set(urlName,{
@@ -81,46 +59,89 @@ fs.readdirSync(apiPathName).forEach(async function(file) {
 		});
 	}
 });
+// ROUTES PATH
+async function loadRoutePage(fileName){
+	try{
+		console.log((import.meta.dir+"/routes/" + fileName))
+		const m = await import(join(import.meta.dir+"/routes/", fileName)).then(module => {
+			//return {default:module.default,handler:module.handler }
+			//console.log(module)
+			return module
+		});
+		//console.log("m fun:",fileName)
+		//console.log(m.constructor.name) // check for AsyncFunction and Function tags  
+		console.log(m)
+		return m;
+	}catch(e){
+		console.log("ERROR HANDLE LOADING...")
+		console.log(e)
+		return null;
+	}
+}
 
-//console.log(APIFiles.get("/api/test"))
-//console.log(await APIFiles.get("/api/test").handler());
-//await sleep(100);
-//const typefun = await APIFiles.get("/api/test").handler;
-//console.log(typefun.constructor.name)
-//console.log(typefun)
-//console.log(await typefun())
-//console.log("AWAIT S")
-//const typefun1 = APIFiles.get("/api/stest").handler;
-//console.log(typefun1.constructor.name)
-//console.log(typefun1)
-//console.log(await typefun1())
+const routesPathName = join(import.meta.dir ,"/routes")
+const urlRoutes = new Map();
 
-//let testURL = "/sdf/api/test"
-//testURL = "/as/api/test"
-//testURL = "/test"
-//console.log("MATCH > /api/")
-//console.log(testURL.search("/api/")) // 0 == match pass
+try{
+	fs.readdirSync(routesPathName).forEach(async function(file) {
+		//console.log(file)
+		//console.log(join(import.meta.dir, fileName))
+		if(file.endsWith('.js')){
+			//console.log("fileName: ", file);
+			const fileName = file;
+			const pageName = fileName.replace(".js","");//remove .js to blank
+			//console.log("pageName: ",pageName);
+			const pageModule = await loadRoutePage(fileName);
+			//console.log(pageModule)
+			const routePageUrl = join("/",pageName)
+			console.log("PAGE ROUTE:",routePageUrl);
+			urlRoutes.set(routePageUrl,{
+				handler:pageModule.handler || null, //serve
+				page:pageModule.default || null // preact render
+			})
+		}
+		if(file.endsWith('.jsx')){
+			//console.log("fileName: ", file);
+			const fileName = file;
+			const pageName = fileName.replace(".jsx","");//remove .js to blank
+			console.log("PAGE ROUTE: ",pageName);
+			const pageModule = await loadRoutePage(fileName);
+			//console.log(pageModule)
+			const routePageUrl = join("/",pageName)
+			console.log("PAGE ROUTE:",routePageUrl);
+			//console.log(pageModule.default)
+			//console.log(pageModule.default())
+			urlRoutes.set(routePageUrl,{
+				handler:pageModule.handler || null, //serve
+				page:pageModule.default || null // preact render
+			})
+		}
+	});
+}catch(e){
+	console.log(e)
+}
+await sleep(50);
+console.log("FINISH API AND ROUTES LOADING...")
 
 // browser input request query
 async function fetch(req){
+	const { pathname } = new URL(req.url);
 	//console.log("/////////////////")
-	const headers = new Headers();
-	headers.set('Content-Type','text/html; charset=UTF-8')
+	//const headers = new Headers();
+	//headers.set('Content-Type','text/html; charset=UTF-8')
 	//console.log("req:",req);
 	//console.log("url page:",req.url);
 	//console.log("METHOD:",req.method);
-	const { pathname } = new URL(req.url)
-	//console.log("pathname",pathname);
-
-	const cookies = cookie.parse(req.headers.get('cookie') || '');
 	
-	if(cookies.token){
+	//console.log("pathname",pathname);
+	//const cookies = cookie.parse(req.headers.get('cookie') || '');
+	//if(cookies.token){
 		//console.log("TOKEN:",cookies.token)
-		const text = cookies.token.split(".")[1]
+		//const text = cookies.token.split(".")[1]
 		//console.log(Buffer.from(text, 'base64').toString('ascii'))//user data
-	}else{
+	//}else{
 		//console.log("TOKEN: NULL")
-	}
+	//}
 
   // https://stackoverflow.com/questions/35408729/express-js-prevent-get-favicon-ico
 	if(pathname === '/favicon.ico'){
@@ -159,44 +180,56 @@ async function fetch(req){
 		}
 	}
 
+	//Testing...
+	//console.log(urlRoutes.has(pathname))
+	if(urlRoutes.has(pathname) == true){ //match file name
+		const heads = new Headers();
+		heads.set('Content-Type','text/html; charset=UTF-8')
+		console.log("FOUND ROUTES:",pathname)
+		const pageModule = urlRoutes.get(pathname);
+		//console.log(pageModule)
+		//console.log(pageModule.page)
+		//console.log(pageModule.page())
+		let jsxTohtml = render(pageModule.page(),{},{pretty:true})
+		console.log(jsxTohtml)
+		return new Response(jsxTohtml,{headers:heads});
+	}
+	
+
+	// index / home > default url
 	if(pathname === '/'){
-		//console.log("default page")
+		const headers = new Headers();
 		//console.log(req.headers.get("cookie"))
 		const sCookie = req.headers.get("cookie");
+		
 		if(sCookie){
 			//console.log("Cookie found")
 			const dCookie = cookie.parse(sCookie)
 			//console.log(dCookie)
 		}else{
-			console.log("cookie not found")
+			//console.log("cookie not found")
 		}
 		//const {default: App} = await import("./src/index.jsx");
 		//let htmlText = render(App(),{},{pretty:true})
 		const blob = file(join(import.meta.dir, "/index.html"))    	
 		//headers.set('Set-Cookie', cookie.serialize('test','testss'))
 		headers.set('Content-Type','text/html; charset=UTF-8')
-		//headers.set('Access-Control-Allow-Origin','*')
+		headers.set('Access-Control-Allow-Origin','*')
 		//headers.set('Access-Control-Allow-Credentials','false')
-		headers.append('Access-Control-Allow-Origin','*')
-		headers.append('Access-Control-Allow-Origin','https://unpkg.com/')
+		//headers.append('Access-Control-Allow-Origin','*')
+		//headers.append('Access-Control-Allow-Origin','https://unpkg.com/')
 		//headers.append('Access-Control-Allow-Origin','http://localhost:3000/')
 		headers.set('Access-Control-Allow-Methods','GET, PUT, POST, DELETE, PATCH')
 		headers.set('Access-Control-Allow-Headers',"Origin, Depth, User-Agent, X-file-Size, X-Request-With, Content-Type, Accept")
 		
 		//console.log(headers)
-		return new Response(blob,{
-			headers
-		});
+		return new Response(blob,{headers});
 	}
 
 	if(req.url.endsWith('.js')){
 		const filepath = new URL( req.url).pathname;
 		const blob = file(join(import.meta.dir+"/", filepath))		  
-		return new Response(blob,{
-			headers:{
-			'Content-Type':'text/javascript'
-			}
-		})
+		return new Response(blob,{headers:{'Content-Type':'text/javascript'}})
 	}
 			
 	if(req.url.endsWith('.jsx')){
@@ -228,8 +261,6 @@ async function fetch(req){
 //console.log("PORT:",PORT)
 console.log(`Bun serve http://localhost:${PORT}`)
 console.log("NODE_ENV:",process.env.NODE_ENV)
-//const mode = process.env.NODE_ENV !== "production";
-//console.log("mode:",mode)
 
 const server = serve({
 	development: process.env.NODE_ENV !== "production",
