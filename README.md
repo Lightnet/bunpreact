@@ -10,20 +10,27 @@
 # Created By: Lightnet
 
 # Information:
-  Prototype build. For preact but note there some react convert and alias since bun built react js.
+  Prototype build. For preact but note there some react convert and alias since bun runtime built.
 
-  Using the preact components since browser only support js module as it need to transpiler or transform from babel.js for to load and read for browser javascript to understand to render the html elements.
+  Using the preact components since browser only support js module as it need to transpiler to load and read for browser javascript to understand to render the html elements and javascript.
 
-  Note this is test build. Still learning. Some of the Bun runtime features are in beta and features not yet added to debug better.
+  Note this is test build. Some of the Bun runtime features are in beta and features not yet added or work to debug better.
 
 ## Features:
 - Bun serve
 - jsx transpiler to js for fetch request handler
-- cookie testing
-- headers testing
-- simple Json web token > JWT
-- preact handler transpiler jsx to js for browser developement build 
-- cors simple ( deal with url script packages)
+- cookie
+  - [x] set
+  - [x] clear
+- headers
+  - [x] Content-Type
+  - [x] Simple Content-Security-Policy ( deal with url script packages)
+- Account
+  - [x] Sign Up
+  - [x] Sign In
+  - [x] Sign Out
+- Simple Json web token > JWT
+- Preact handler transpiler jsx to js for browser developement build 
 - database sqlite simple test
 - web IDE ( importmap )
   - https://www.npmjs.com/package/es-module-shims
@@ -47,6 +54,8 @@ async function fetch(req){// from browser client input
 }
 
 const server = Bun.serve({
+  development: process.env.NODE_ENV !== "production",
+  //hostname: "localhost", // defaults to 0.0.0.0
   port: 3000,
   fetch:fetch,
   error(error) {//error: Error
@@ -58,7 +67,7 @@ const server = Bun.serve({
 ```
 
 ### Headers:
- The follow the basic of the header format web api.
+ The follow the basic of the header format web api. But it not recommand for allow all for url it for testing dev build.
 
 ```js
 const headers = new Headers();
@@ -157,34 +166,22 @@ export default jsx(
 
 ## Notes: 
  - There are couples way to build preact serve http. 
+ - Bun Runtime 
   - SSR packages
-  - bun auto compiler, transpiler, package manager
- - There is server side render. (too advance coding)
+  - There is server side render. (too advance coding)
+  - Auto compiler, transpiler, package manager
   - there is bun predefined config .env loading
   - required socket to reload or rebuild preact components and variablies
   - package loading and compiler
   - watch files changes (bun not build)
   - pre generate files for layer order query like middleware
- - preact two or three type of using by component class or jsx file.
- - odd bug for packages url for preact@latest for router async load
+ - Preact
+  - preact two or three type of using by component class or jsx file.
+  - odd bug for packages url for preact@latest for router async load
  - localStorage access third for dev web host Access is denied
 
 # Bun runtime:
  Read more on https://bun.sh
-
-# No build tools route:
-https://preactjs.com/guide/v10/getting-started
-
-```html
-<script type="module">
-  import { h, Component, render } from 'https://unpkg.com/preact?module';
-
-  // Create your app
-  const app = h('h1', null, 'Hello World!');
-
-  render(app, document.body);
-</script>
-```
 
 ## Web Sandbox Build Test:
 - https://codedamn.com/playground/4tiQmWVHa6BkHvFwDp-T9
