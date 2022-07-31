@@ -3,6 +3,12 @@
 
 Note the prefixed for api is determind the path in case of miss match for page or non page return data.
 
+```
+URL >  http://localhost:3000/api/[name]
+```
+
+
+
 ```js
 //browser
 fetch('/api/[name]')

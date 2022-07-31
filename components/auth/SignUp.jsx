@@ -30,7 +30,7 @@ export default function ELogin(){
   }
 
   function btnRegister(){
-    fetch('/signup',{
+    fetch('/api/signup',{
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body:JSON.stringify({alias:alias,pass:passphrase})

@@ -21,7 +21,7 @@ export default function SignOut(){
   function btnSignOut(){
     //console.log("query")
 
-    axiosapi.post('/signout',{
+    axiosapi.post('/api/signout',{
       api:"LOGOUT"
     }).then(response=>{
       console.log(response)
@@ -36,8 +36,7 @@ export default function SignOut(){
         console.log("LOGIN ERROR")
       }
     })
-
-
+    
     /*
     fetch('/signout',{
       method: 'POST',

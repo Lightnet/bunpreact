@@ -9,26 +9,26 @@
 
 // mozilla docs/web/api/headers
 
-import crypto,{ randomUUID } from 'crypto';
+//import crypto,{ randomUUID } from 'crypto';
 import {file, serve} from "bun";
 import fs from "node:fs"
 import { join } from "node:path";
-import livereload from "bun-livereload";
+//import livereload from "bun-livereload";
 import cookie from "cookie";
 import { 
 	initDB, 
-	getDB, 
-	checkUser, 
-	addUser
+	//getDB, 
+	//checkUser, 
+	//addUser
 } from "./database.js";
-import { isEmpty } from "./libs/helper.js"
-import { verifyPassword, createJWT } from "./libs/serveapi.js"
+//import { isEmpty } from "./libs/helper.js"
+//import { verifyPassword, createJWT } from "./libs/serveapi.js"
 
 //console.log("process.env.PORT")
 //console.log(process.env.PORT)
 
 //console.log(process.env.SECRET)
-const SECRET = process.env.SECRET;
+//const SECRET = process.env.SECRET;
 
 initDB();
 
@@ -99,14 +99,7 @@ fs.readdirSync(apiPathName).forEach(async function(file) {
 //testURL = "/as/api/test"
 //testURL = "/test"
 //console.log("MATCH > /api/")
-//console.log(testURL.match("/api/"))
-//let REGAPI = /\api\/\ ;
 //console.log(testURL.search("/api/")) // 0 == match pass
-
-//const sum = async (a, b) => {
-  //return a + b;
-//};
-//console.log(sum.constructor.name)
 
 // browser input request query
 async function fetch(req){
@@ -124,130 +117,44 @@ async function fetch(req){
 	if(cookies.token){
 		//console.log("TOKEN:",cookies.token)
 		const text = cookies.token.split(".")[1]
-		//console.log(Buffer.from(text, 'base64').toString('ascii'))
+		//console.log(Buffer.from(text, 'base64').toString('ascii'))//user data
 	}else{
 		//console.log("TOKEN: NULL")
 	}
 
   // https://stackoverflow.com/questions/35408729/express-js-prevent-get-favicon-ico
 	if(pathname === '/favicon.ico'){
-		//heads.set('Set-Cookie', cookie.serialize('test','testss'))
-		//headers.set('Content-Type','text/html; charset=UTF-8')
+		//const heads = new Headers();
+		//heads.set('Content-Type','text/html; charset=UTF-8')
 		//return new Response(blob,{headers:heads});
-		//return new Response('Hello Echo!',{headers:headers});
 		return new Response('',{status:204});
 	}
-
-	/*
-	if(pathname === '/signin' && req.method=='POST'){
-		console.log("SIGN IN POST")
-
-		const data = (await req.json());
-		//console.log("data????")
-		//console.log(data)
-		if(!isEmpty(data.alias) && !isEmpty(data.pass)){
-			console.log("NOT EMPTY")
-			let user = checkUser(data.alias);
-			console.log("USER:")
-			console.log(user)
-			//if(user.pass)
-			if(user){//check exist
-				console.log("FOUND USER")
-				//check for passphrase
-				//console.log(verifyPassword(user.passphrase,data.pass,user.salt))
-				if(verifyPassword(user.passphrase,data.pass,user.salt)==true){
-					console.log("PASS")
-					//heads.set('Set-Cookie', cookie.serialize('test','testss'))
-
-					const payload={
-						uuid:randomUUID(),
-						id:user.userId,
-						alias:user.alias
-					}
-
-					const token = createJWT(payload,SECRET);
-					console.log(token)
-
-					return new Response(JSON.stringify({api:"TOKEN",user:payload}),{status:200,headers:{
-						'Set-Cookie':cookie.serialize('token',token,{
-							httpOnly: true,
-							//maxAge: 60 * 60 * 24 * 7 // 1 week
-							//maxAge: 60 * 60 * 24  // 1 day ?
-							maxAge: 60  // 60 sec?
-						})
-					}});
-
-				}else{
-					console.log("FAIL PASSWORD")
-					return new Response(JSON.stringify({api:"INVALIDPASS"}),{status:200});
-				}
-			}else{
-				console.log("NOT FOUND")
-				return new Response(JSON.stringify({api:"INVALID"}),{status:200});
-			}
-				
-		}else{
-			console.log("EMPTY")
-			return new Response(JSON.stringify({api:"EMPTY"}),{status:200});
-		}
-        
-		return new Response('',{status:200});
-	}
-	*/
-	if(pathname === '/signup' && req.method=='POST'){
-		const data = await req.json();
-		if(!isEmpty(data.alias) && !isEmpty(data.pass)){
-			const isUser = checkUser(data.alias);
-			if(isUser){
-				console.log("USER FOUND")
-			}else{
-				console.log("NOT USER FOUND")
-				addUser(data.alias,data.pass);
-			}
-		}
-		//addUser("test","test")
-		return new Response('',{status:200});
-	}
-
-	if(pathname === '/signout' && req.method=='POST'){
-		//clear token
-		return new Response(JSON.stringify({api:"LOGOUT"}),{status:200,headers:{
-			'Set-Cookie':cookie.serialize('token','',{
-				httpOnly: true,
-				maxAge:0,
-				//expires: Date.now()
-			})
-		}});
-	}
-
-  if(pathname === '/db'){
-		getDB();
-		return new Response('',{status:200});
-	}
-
-	if(pathname === '/echo'){
-		//heads.set('Set-Cookie', cookie.serialize('test','testss'))
-		headers.set('Content-Type','text/html; charset=UTF-8')
-		//return new Response(blob,{headers:heads});
-		return new Response('Hello Echo!',{headers:headers});
-	}
+	
+	//if(pathname === '/echo'){
+		//const heads = new Headers();
+		//heads.set('Content-Type','text/html; charset=UTF-8')
+		//return new Response("ECHO!",{headers:heads});
+	//}
 
 	//CHECK PATH API 
 	if(pathname.search("/api/")==0){
 		console.log("API FOUND:", pathname)
 		if(APIFiles.has(pathname)==true){//match file name
-			
 			const APIName = APIFiles.get(pathname);
-			if(APIName.handler){
-				if(APIName.handler.constructor.name=='Function'){
-					return APIName.handler(req)
-				}else if (APIName.handler.constructor.name=='AsyncFunction'){
-					return await APIName.handler(req);
+			try{
+				if(APIName.handler){
+					if(APIName.handler.constructor.name=='Function'){
+						return APIName.handler(req)
+					}else if (APIName.handler.constructor.name=='AsyncFunction'){
+						return await APIName.handler(req);
+					}else{
+						return new Response("Uh oh!!\n", { status: 500 });	
+					}
 				}else{
-					return new Response("Uh oh!!\n", { status: 500 });	
+					return new Response("Uh oh!!\n", { status: 500 });
 				}
-			}else{
-				return new Response("Uh oh!!\n", { status: 500 });
+			}catch(e){
+				return new Response("Uh oh!!\n"+e.toString(), { status: 500 });
 			}
 		}
 	}
@@ -265,7 +172,7 @@ async function fetch(req){
 		}
 		//const {default: App} = await import("./src/index.jsx");
 		//let htmlText = render(App(),{},{pretty:true})
-		const blob = file(join(import.meta.dir+"/", "/index.html"))    	
+		const blob = file(join(import.meta.dir, "/index.html"))    	
 		//headers.set('Set-Cookie', cookie.serialize('test','testss'))
 		headers.set('Content-Type','text/html; charset=UTF-8')
 		//headers.set('Access-Control-Allow-Origin','*')
@@ -320,7 +227,13 @@ async function fetch(req){
 
 //console.log("PORT:",PORT)
 console.log(`Bun serve http://localhost:${PORT}`)
+console.log("NODE_ENV:",process.env.NODE_ENV)
+//const mode = process.env.NODE_ENV !== "production";
+//console.log("mode:",mode)
+
 const server = serve({
+	development: process.env.NODE_ENV !== "production",
+	//hostname: "localhost", // defaults to 0.0.0.0
   //port: 3000,
   port: Number(PORT),//error on string
   //fetch:livereload(fetch),
