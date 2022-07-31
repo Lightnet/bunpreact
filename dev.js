@@ -31,7 +31,7 @@ import { verifyPassword, createJWT } from "./libs/serveapi.js"
 //console.log("process.env.PORT")
 //console.log(process.env.PORT)
 
-console.log(process.env.SECRET)
+//console.log(process.env.SECRET)
 const SECRET = process.env.SECRET;
 
 initDB();
@@ -39,21 +39,77 @@ initDB();
 let PORT = process.env.PORT || 3000;
 
 const apiPathName = join(  import.meta.dir ,"/routes/api")
-console.log(apiPathName)
+//console.log(apiPathName)
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
 
-let apiFiles = [];
+//let apiFiles = [];
 const APIFiles = new Map()
 // const contacts = new Map()
 // contacts.set('Jessie', {phone: "213-555-1234", address: "123 N 1st Ave"})
 // contacts.get('Jessie') // {phone: "213-555-1234", address: "123 N 1st Ave"}
 // contacts.delete('Jessie') // true
 
-fs.readdirSync(apiPathName).forEach(function(file) {
-    console.log(file)
-    console.log(file.endsWith('.js'))
+async function sloadModule(fileName){
+	const m = await import(join(import.meta.dir+"/routes/", fileName)).then(module => module.default);
+	//console.log("m fun:",fileName)
+	//console.log(m.constructor.name) // check for AsyncFunction and Function tags  
+	//console.log(m)
+	return m;
+}
+
+function sleep(ms){
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+fs.readdirSync(apiPathName).forEach(async function(file) {
+    //console.log(file)
+    //console.log(file.endsWith('.js'))
+    if(file.endsWith('.js')){
+        const fileName = join("/api/",file);
+				//console.log("fileName");
+        //console.log(fileName);
+				let urlName = fileName.replace(".js","");//remove .js to blank
+				console.log(urlName);
+				//console.log(join(import.meta.dir, fileName))
+				//console.log(fileName);
+				const loadFun = await sloadModule(fileName);
+				//console.log("modfile")
+				//console.log(loadFun)
+				//console.log(loadFun.constructor.name)
+
+				APIFiles.set(urlName,{
+					handler:loadFun
+				});
+    }
   //require("./routes/" + file);
 });
+
+//console.log(APIFiles.get("/api/test"))
+//console.log(await APIFiles.get("/api/test").handler());
+await sleep(100);
+const typefun = await APIFiles.get("/api/test").handler;
+console.log(typefun.constructor.name)
+console.log(typefun)
+//console.log(await typefun())
+console.log("AWAIT S")
+const typefun1 = APIFiles.get("/api/stest").handler;
+console.log(typefun1.constructor.name)
+//console.log(typefun1)
+//console.log(await typefun1())
+
+let testURL = "/sdf/api/test"
+testURL = "/as/api/test"
+//testURL = "/test"
+//console.log("MATCH > /api/")
+//console.log(testURL.match("/api/"))
+//let REGAPI = /\api\/\ ;
+//console.log(testURL.search("/api/")) // 0 == match pass
+
+//const sum = async (a, b) => {
+  //return a + b;
+//};
+//console.log(sum.constructor.name)
+
 
 async function fetch(req){
 	//console.log("/////////////////")
@@ -75,20 +131,21 @@ async function fetch(req){
 		//console.log("TOKEN: NULL")
 	}
 
+  // https://stackoverflow.com/questions/35408729/express-js-prevent-get-favicon-ico
 	if(pathname === '/favicon.ico'){
 		//heads.set('Set-Cookie', cookie.serialize('test','testss'))
 		//headers.set('Content-Type','text/html; charset=UTF-8')
 		//return new Response(blob,{headers:heads});
 		//return new Response('Hello Echo!',{headers:headers});
-		return new Response('',{status:404});
+		return new Response('',{status:204});
 	}
 
 	if(pathname === '/signin' && req.method=='POST'){
 		console.log("SIGN IN POST")
 
 		const data = (await req.json());
-		console.log("data????")
-		console.log(data)
+		//console.log("data????")
+		//console.log(data)
 		if(!isEmpty(data.alias) && !isEmpty(data.pass)){
 			console.log("NOT EMPTY")
 			let user = checkUser(data.alias);
@@ -174,6 +231,24 @@ async function fetch(req){
 		headers.set('Content-Type','text/html; charset=UTF-8')
 		//return new Response(blob,{headers:heads});
 		return new Response('Hello Echo!',{headers:headers});
+	}
+
+	//CHECK PATH API 
+	if(pathname.search("/api/")==0){
+		if(APIFiles.has(pathname)==true){//match file name
+			const APIName = APIFiles.get(pathname);
+			if(APIName.handler){
+				if(APIName.handler.constructor.name=='Function'){
+					return APIName.handler(req)
+				}else if (APIName.handler.constructor.name=='AsyncFunction'){
+					return await APIName.handler(req);
+				}else{
+					return new Response("Uh oh!!\n", { status: 500 });	
+				}
+			}else{
+				return new Response("Uh oh!!\n", { status: 500 });
+			}
+		}
 	}
 
 	if(pathname === '/'){
@@ -316,7 +391,7 @@ async function fetch(req){
 		return new Response(JSXToJs,{headers:{'Content-Type':'text/javascript'}})
 	}
   //console.log("LAST CHECK?")
-  console.log(join(import.meta.dir,"./public/", pathname))
+  //console.log(join(import.meta.dir,"./public/", pathname))
 	return new Response(
 		file(join(import.meta.dir,"./public/", pathname))
 	);
