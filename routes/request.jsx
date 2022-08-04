@@ -11,13 +11,12 @@
 import { h, Fragment } from "preact"
 
 export function handle(){// serve only http
-  console.log("query")
-  //return new Response();//?
-  return {};//? object data to pass to Page props ?
+  console.log("Response")
+  return new Response("Hello World! Request!"); //will not render page doc but this will render doc instead
 }
 
-export default function Page(props){ //props from handler
+export default function Page(props){ //props from handle
   return (<div>
-    <label>Hello Bun Preact! Route!</label>
+    <label>Hello Bun Preact! Response!</label>
   </div>)
 }

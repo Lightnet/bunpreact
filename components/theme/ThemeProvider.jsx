@@ -30,8 +30,10 @@ export default function ThemeProvider(props){
     }
     const storedTheme = window.localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     console.log("storedTheme: ",storedTheme);
-    if (storedTheme)
+    if (storedTheme){
       document.documentElement.setAttribute('data-theme', storedTheme)
+      setTheme(storedTheme)
+    }
   }
 
   const value = useMemo(() => {

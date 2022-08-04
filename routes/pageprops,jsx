@@ -1,0 +1,30 @@
+/*
+  Project Name: Bun Preact
+  License: MIT
+  Created By: Lightnet
+
+	Information:
+		work in progress not build yet
+*/
+
+/** @jsx h */
+import { h, Fragment } from "preact"
+//import { useState, useEffect } from "preact/hooks"
+
+export function handle(){// serve only http
+  return {text:"strtext",foo:"bar"};//? object data to pass to Page props ?
+}
+
+export default function Page(props){ //props from handler
+  //const [isLogin, setIsLogin] = useState(false)
+
+  //useEffect(()=>{
+    //console.log(props)
+  //},[])
+  console.log(props)
+
+  return (<div>
+    <label>Foo:{props.foo}</label>
+  </div>)
+}
+//<label>Foo{props.bar}</label>

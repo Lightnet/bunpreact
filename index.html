@@ -28,15 +28,17 @@
       }
     }
     </script>
-<script type="module" defer nonce="n0nce">
+<script async type="module" defer nonce="n0nce">
 // For Testing if the code works
-  import {h} from "preact";
+  import {h,render} from "preact";
+  import {useState} from "preact/hooks";
   console.log(h)
   console.log("Test Preact Here?");
 </script>
+<!--CLIENT-->
+<!-- 
 <script type="module" src="client.jsx" nonce="n0nce"></script>  
-
-<!-- -->
+-->
 	</head>
 	<body>
     <label id="loading">Loading...</label>

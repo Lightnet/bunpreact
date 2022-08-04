@@ -44,6 +44,7 @@ async function loadHandle(fileName){
 		return null;
 	}
 }
+
 fs.readdirSync(apiPathName).forEach(async function(file) {
 	//console.log(file)
 	if(file.endsWith('.js')){
@@ -62,7 +63,7 @@ fs.readdirSync(apiPathName).forEach(async function(file) {
 // ROUTES PATH
 async function loadRoutePage(fileName){
 	try{
-		console.log((import.meta.dir+"/routes/" + fileName))
+		//console.log((import.meta.dir+"/routes/" + fileName))
 		const m = await import(join(import.meta.dir+"/routes/", fileName)).then(module => {
 			//return {default:module.default,handler:module.handler }
 			//console.log(module)
@@ -70,7 +71,7 @@ async function loadRoutePage(fileName){
 		});
 		//console.log("m fun:",fileName)
 		//console.log(m.constructor.name) // check for AsyncFunction and Function tags  
-		console.log(m)
+		//console.log(m)
 		return m;
 	}catch(e){
 		console.log("ERROR HANDLE LOADING...")
@@ -82,6 +83,19 @@ async function loadRoutePage(fileName){
 const routesPathName = join(import.meta.dir ,"/routes")
 const urlRoutes = new Map();
 
+async function pagePathName(fileName, pageName){
+	//console.log("fileName: ",fileName)
+	const pageModule = await loadRoutePage(fileName);
+	//console.log(pageModule)
+	const routePageUrl = join("/",pageName)
+	//console.log("PAGE ROUTE:",routePageUrl);
+	urlRoutes.set(routePageUrl,{
+		fileName:fileName,
+		handler:pageModule.handle || null, //serve
+		page:pageModule.default || null // preact render
+	})
+}
+
 try{
 	fs.readdirSync(routesPathName).forEach(async function(file) {
 		//console.log(file)
@@ -90,31 +104,14 @@ try{
 			//console.log("fileName: ", file);
 			const fileName = file;
 			const pageName = fileName.replace(".js","");//remove .js to blank
-			//console.log("pageName: ",pageName);
-			const pageModule = await loadRoutePage(fileName);
-			//console.log(pageModule)
-			const routePageUrl = join("/",pageName)
-			console.log("PAGE ROUTE:",routePageUrl);
-			urlRoutes.set(routePageUrl,{
-				handler:pageModule.handler || null, //serve
-				page:pageModule.default || null // preact render
-			})
+			await pagePathName(fileName, pageName)
 		}
 		if(file.endsWith('.jsx')){
 			//console.log("fileName: ", file);
 			const fileName = file;
 			const pageName = fileName.replace(".jsx","");//remove .js to blank
-			console.log("PAGE ROUTE: ",pageName);
-			const pageModule = await loadRoutePage(fileName);
-			//console.log(pageModule)
-			const routePageUrl = join("/",pageName)
-			console.log("PAGE ROUTE:",routePageUrl);
-			//console.log(pageModule.default)
-			//console.log(pageModule.default())
-			urlRoutes.set(routePageUrl,{
-				handler:pageModule.handler || null, //serve
-				page:pageModule.default || null // preact render
-			})
+			//console.log("PAGE ROUTE: ",pageName);
+			await pagePathName(fileName, pageName)
 		}
 	});
 }catch(e){
@@ -122,6 +119,27 @@ try{
 }
 await sleep(50);
 console.log("FINISH API AND ROUTES LOADING...")
+
+function clientRouteToString(fileName,props){
+  if(!props){
+    props={};
+  }
+  return `<script type="module" nonce="n0nce">
+import { render } from "preact"
+import App from "./routes/${fileName}"
+let props = JSON.parse('${JSON.stringify(props)}')
+if(props){
+  render(App(props), document.body)
+}else{
+  render(App(), document.body)
+}
+
+let loading = document.getElementById("loading")
+if(loading){
+  loading.remove()
+}
+</script>`;
+}
 
 // browser input request query
 async function fetch(req){
@@ -183,35 +201,71 @@ async function fetch(req){
 	//Testing...
 	//console.log(urlRoutes.has(pathname))
 	if(urlRoutes.has(pathname) == true){ //match file name
-		const heads = new Headers();
-		heads.set('Content-Type','text/html; charset=UTF-8')
-		console.log("FOUND ROUTES:",pathname)
+		//const heads = new Headers();
+		//heads.set('Content-Type','text/html; charset=UTF-8')
+		console.log("FOUND ROUTE:", pathname)
 		const pageModule = urlRoutes.get(pathname);
 		//console.log(pageModule)
-		//console.log(pageModule.page)
-		//console.log(pageModule.page())
-		let jsxTohtml = render(pageModule.page(),{},{pretty:true})
-		console.log(jsxTohtml)
-		return new Response(jsxTohtml,{headers:heads});
+		try{
+			let pageProps={};
+
+			if(pageModule.handler){//check if this is not null
+				if(pageModule.handler.constructor.name=='Function'){//check if not sync for function
+					const data = pageModule.handler(req);
+					if(data instanceof Response){
+            return data
+          }else{
+            pageProps = data;
+          }
+				}else if (pageModule.handler.constructor.name=='AsyncFunction'){//check if sync for AsyncFunction
+					const data = await pageModule.handler(req);
+					if(data instanceof Response){
+            return data
+          }else{
+            pageProps = data;
+          }
+				}
+			}
+			//console.log("typeof pageModule")
+			//console.log(typeof pageModule.page)
+
+			if(typeof pageModule.page == 'function'){
+				console.log("FOUND PAGE")
+				//let jsxTohtml = render(pageModule.page(values),{},{pretty:true})
+				//console.log(jsxTohtml)
+				//return new Response(jsxTohtml,{headers:heads});
+				const blob = file(join(import.meta.dir, "/index.html"))
+				let textHtml = await (new Response(blob).text());
+				//console.log(textHtml)
+				console.log("/routes/"+pageModule.fileName)
+				textHtml = textHtml.replace('<!--CLIENT-->',clientRouteToString(pageModule.fileName, pageProps))
+				//return new Response(textHtml, {headers:{'Context-Type':'text/html'}});
+				const headers = new Headers();
+				headers.set('Content-Type','text/html; charset=UTF-8')
+				return new Response(textHtml, {headers});
+				//return new Response("<div>Hello</div>", {headers});
+			}
+		}catch(e){
+      return new Response("Uh oh!!\n"+e.toString(), { status: 500 });
+			//return new Response("Uh oh!!", { status: 500 });
+    }
 	}
-	
 
 	// index / home > default url
 	if(pathname === '/'){
 		const headers = new Headers();
 		//console.log(req.headers.get("cookie"))
-		const sCookie = req.headers.get("cookie");
-		
-		if(sCookie){
+		//const sCookie = req.headers.get("cookie");		
+		//if(sCookie){
 			//console.log("Cookie found")
-			const dCookie = cookie.parse(sCookie)
+			//const dCookie = cookie.parse(sCookie)
 			//console.log(dCookie)
-		}else{
+		//}else{
 			//console.log("cookie not found")
-		}
+		//}
 		//const {default: App} = await import("./src/index.jsx");
 		//let htmlText = render(App(),{},{pretty:true})
-		const blob = file(join(import.meta.dir, "/index.html"))    	
+		const blob = file(join(import.meta.dir, "/index.html"))
 		//headers.set('Set-Cookie', cookie.serialize('test','testss'))
 		headers.set('Content-Type','text/html; charset=UTF-8')
 		headers.set('Access-Control-Allow-Origin','*')
@@ -221,9 +275,12 @@ async function fetch(req){
 		//headers.append('Access-Control-Allow-Origin','http://localhost:3000/')
 		headers.set('Access-Control-Allow-Methods','GET, PUT, POST, DELETE, PATCH')
 		headers.set('Access-Control-Allow-Headers',"Origin, Depth, User-Agent, X-file-Size, X-Request-With, Content-Type, Accept")
-		
+		let textHtml = await (new Response(blob).text());
+		//console.log(textHtml)
+		textHtml = textHtml.replace('<!--CLIENT-->','<script type="module" src="client.jsx" nonce="n0nce"></script>')
 		//console.log(headers)
-		return new Response(blob,{headers});
+		return new Response(textHtml,{headers});
+		//return new Response(blob,{headers});
 	}
 
 	if(req.url.endsWith('.js')){
