@@ -11,7 +11,7 @@ import {
 
 import { isEmpty } from "../../libs/helper.js";
 
-export default async function handler(req){
+export default async function handle(req){
   const data = await req.json();
   if(!isEmpty(data.alias) && !isEmpty(data.pass)){
     const isUser = checkUser(data.alias);

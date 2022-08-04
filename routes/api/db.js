@@ -7,7 +7,7 @@ import {
   getDB
 } from "../../database.js"
 
-export default function handler(req){
+export default function handle(req){
   getDB();
 	return new Response('',{status:200});
 }

@@ -13,7 +13,7 @@ import {
 
 import { isEmpty } from "../../libs/helper.js"
 
-export default async function handler(req){
+export default async function handle(req){
   console.log("TODOLIST METHOD:",req.method)
   console.log("req",req)
   console.log(req.method)

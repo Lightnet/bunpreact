@@ -142,7 +142,7 @@ if(loading){
 }
 
 // browser input request query
-async function fetch(req){
+async function apiFetch(req){
 	const { pathname } = new URL(req.url);
 	//console.log("/////////////////")
 	//const headers = new Headers();
@@ -325,7 +325,7 @@ const server = serve({
   //port: 3000,
   port: Number(PORT),//error on string
   //fetch:livereload(fetch),
-	fetch:fetch,
+	fetch:apiFetch,
   error(error) {//error: Error
     return new Response("Uh oh!!\n" + error.toString(), { status: 500 });
   },

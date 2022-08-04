@@ -14,7 +14,7 @@ import cookie from "cookie";
 
 const SECRET = process.env.SECRET;
 
-export default async function handler(req){
+export default async function handle(req){
   console.log("SIGN IN POST")
 
   const data = await req.json();

@@ -7,7 +7,7 @@
 //const SECRET = process.env.SECRET;
 import cookie from "cookie";
 
-export default async function handler(req){
+export default async function handle(req){
   //clear token
   return new Response(JSON.stringify({api:"LOGOUT"}),{status:200,headers:{
     'Set-Cookie':cookie.serialize('token','',{

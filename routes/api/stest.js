@@ -4,7 +4,7 @@
   Created By: Lightnet
 */
 
-export default function handler(){
+export default function handle(){
   console.log("TEST CALL TEST NORMAL")
   return new Response("Hello Test!");
 }

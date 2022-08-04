@@ -4,7 +4,7 @@
   Created By: Lightnet
 */
 
-export default function handler(req){
+export default function handle(req){
   const headers = new Headers();
 	headers.set('Content-Type','text/html; charset=UTF-8')
   //headers.set('Set-Cookie', cookie.serialize('test','testss'))
